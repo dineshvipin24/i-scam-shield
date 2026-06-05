@@ -1,0 +1,33 @@
+name: ai_scam_shield
+description: "AI Scam Shield Mobile App with WebRTC calling and Audio Deepfake alerts."
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  
+  # Communication & Audio
+  flutter_webrtc: ^0.10.6
+  web_socket_channel: ^2.4.5
+  http: ^1.2.1
+  
+  # System Permissions & Storage
+  permission_handler: ^11.3.1
+  shared_preferences: ^2.2.3
+  contacts_service: ^0.6.3
+  
+  # Design Aesthetics
+  google_fonts: ^6.2.1
+  flutter_spinkit: ^5.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true

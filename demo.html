@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Scam Shield — Live Mic Demo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0A0E1A;--surface:#111827;--border:#1E2D45;--accent:#00D4FF;--safe:#00E676;--warn:#FFB300;--danger:#FF1744;--text:#E8EAF0;--muted:#607080}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface)}
+header h1{font-size:18px;font-weight:800}
+.mic-badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:#00E67622;color:var(--safe);border:1px solid #00E67644;margin-left:auto}
+main{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:24px;flex:1;max-width:1200px;margin:0 auto;width:100%}
+@media(max-width:700px){main{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px}
+.card h2{font-size:15px;font-weight:700;margin-bottom:16px}
+
+/* Gauge */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+.gauge-ring{width:190px;height:190px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:10px solid var(--border);transition:border-color .4s}
+.gauge-inner{width:155px;height:155px;border-radius:50%;background:var(--bg);border:4px solid currentColor;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:border-color .4s}
+.gauge-pct{font-size:44px;font-weight:900;transition:color .4s}
+.gauge-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.risk-label{padding:7px 22px;border-radius:24px;font-size:14px;font-weight:700;letter-spacing:.5px;transition:all .4s}
+.bar-track{width:100%;height:12px;background:var(--border);border-radius:6px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:6px;width:0%;transition:width .4s,background .4s}
+.bar-marks{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px}
+
+/* Decision */
+.decision-box{padding:18px;border-radius:14px;border-width:2px;border-style:solid;text-align:center;transition:all .4s;margin-top:4px}
+.decision-icon{font-size:48px;margin-bottom:8px}
+.decision-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.decision-sub{font-size:13px;line-height:1.6;opacity:.85}
+
+/* Mic button */
+.mic-btn{width:100%;padding:16px;border-radius:14px;border:none;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:10px;justify-content:center;transition:all .2s;margin-top:8px}
+.mic-btn.idle{background:var(--accent);color:var(--bg)}
+.mic-btn.listening{background:var(--danger);color:#fff;animation:pulse-btn 1.5s infinite}
+@keyframes pulse-btn{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.mic-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Transcript */
+#transcript-box{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;height:180px;overflow-y:auto;font-size:13px;line-height:1.7}
+.t-line{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+.t-time{color:var(--muted);font-size:10px;white-space:nowrap;margin-top:3px}
+.t-pct{font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;margin-left:auto;white-space:nowrap}
+
+/* Keywords */
+.keyword-tags{display:flex;flex-wrap:wrap;gap:6px;min-height:32px}
+.tag{padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600}
+.tag-hit{background:var(--danger)22;color:var(--danger);border:1px solid var(--danger)44}
+.tag-miss{background:var(--border);color:var(--muted)}
+
+/* Scores timeline */
+#timeline{display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto}
+.tl-row{display:flex;align-items:center;gap:10px;font-size:12px}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tl-text{flex:1;color:var(--text)}
+.tl-score{font-weight:700;white-space:nowrap}
+
+/* Warning box */
+#warning-overlay{display:none;position:fixed;inset:0;background:#FF174466;z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+#warning-overlay.show{display:flex}
+.warn-box{background:#1A0008;border:3px solid var(--danger);border-radius:24px;padding:40px;max-width:400px;text-align:center;animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="font-size:22px">🛡️</div>
+  <h1>AI Scam Shield — Real-Time Mic Monitor</h1>
+  <div class="mic-badge" id="status-badge">● READY</div>
+</header>
+
+<main>
+  <!-- LEFT: Gauge + Decision -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <h2>🎯 Live Risk Score</h2>
+      <div class="gauge-wrap">
+        <div class="gauge-ring" id="gauge-ring">
+          <div class="gauge-inner" id="gauge-inner" style="border-color:var(--safe)">
+            <span class="gauge-pct" id="gauge-pct" style="color:var(--safe)">0%</span>
+            <span class="gauge-sub">Risk Score</span>
+          </div>
+        </div>
+        <div class="risk-label" id="risk-label" style="background:#00E67622;color:var(--safe);border:1px solid #00E67644">✅ SAFE</div>
+        <div class="bar-track" style="width:100%">
+          <div class="bar-fill" id="bar-fill" style="background:var(--safe)"></div>
+        </div>
+        <div class="bar-marks"><span>0</span><span>Safe</span><span>Suspicious</span><span>Fraud</span><span>1.0</span></div>
+      </div>
+    </div>
+
+    <div class="card" id="decision-card">
+      <h2>⚡ AI Decision</h2>
+      <div class="decision-box" id="decision-box" style="border-color:var(--safe);background:#00E67611">
+        <div class="decision-icon">✅</div>
+        <div class="decision-title" id="decision-title" style="color:var(--safe)">SAFE TO CONTINUE</div>
+        <div class="decision-sub" id="decision-sub">No scam patterns detected. This call appears legitimate.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Mic + Transcript + Timeline -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <h2>🎙️ Microphone</h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:14px">
+        Click Start and <strong>speak</strong> — say anything like a phone conversation. The AI will detect scam patterns in real-time.
+      </p>
+
+      <button class="mic-btn idle" id="mic-btn" onclick="toggleMic()">
+        <span id="mic-icon">🎙️</span>
+        <span id="mic-text">Start Listening</span>
+      </button>
+
+      <div style="margin-top:12px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Detected scam keywords:</div>
+        <div class="keyword-tags" id="keyword-tags">
+          <span style="color:var(--muted);font-size:12px">None yet...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📝 Live Transcript</h2>
+      <div id="transcript-box">
+        <div style="color:var(--muted);text-align:center;padding-top:50px">Speak into your microphone...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📊 Score Timeline</h2>
+      <div id="timeline"><div style="color:var(--muted);font-size:12px">Timeline will appear as you speak...</div></div>
+    </div>
+  </div>
+</main>
+
+<!-- Fraud overlay -->
+<div id="warning-overlay">
+  <div class="warn-box">
+    <div style="font-size:64px;margin-bottom:12px">🚨</div>
+    <div style="font-size:24px;font-weight:800;color:var(--danger);margin-bottom:8px">FRAUD DETECTED!</div>
+    <div style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:24px">
+      AI Risk Score: <strong id="overlay-score" style="color:var(--danger)">89%</strong><br><br>
+      <strong>Scam keywords detected in speech.</strong><br>
+      Do NOT share OTP, PIN, Aadhaar, or bank details!<br><br>
+      In a real call: Warning injected via Twilio REST API → Scammer disconnected.
+    </div>
+    <button onclick="document.getElementById('warning-overlay').classList.remove('show')"
+      style="background:var(--danger);color:#fff;padding:12px 32px;border-radius:12px;border:none;font-size:15px;font-weight:700;cursor:pointer">
+      ✓ Dismiss
+    </button>
+  </div>
+</div>
+
+<script>
+// ─── Scam keyword list (Hindi + English) ─────────────────────────────────────
+const SCAM_KEYWORDS = [
+  // English
+  "otp","pin","account","blocked","freeze","kyc","verify","verification",
+  "arrested","police","warrant","crime","cbi","rbi","trai","sbi","npci",
+  "transfer","upi","paytm","phonepe","prize","lottery","won","claim",
+  "fee","processing","refund","immediately","urgent","last chance",
+  "debit","credit","compromised","hack","virus","remote","access",
+  "aadhaar","pan","passport","income tax","customs","clearance",
+  "investment","guaranteed","double","percent","return","bitcoin",
+  "gift card","recharge","electricity","disconnect","legal action",
+  // Hindi/Hinglish
+  "otp","abhi","turant","band","share","rupees","lakh","crore",
+  "paisa","khata","account","arrested","ghar","raid","payment",
+  "settlement","case darj","warrant issue","police","cbi"
+];
+
+const WEIGHT = {
+  "otp":2.0,"pin":1.8,"arrested":1.9,"cbi":1.8,"warrant":1.9,
+  "freeze":1.7,"kyc":1.6,"upi":1.5,"transfer":1.4,"verify":1.3,
+  "prize":1.5,"lottery":1.6,"guaranteed":1.7,"double":1.5,
+  "remote":1.8,"access":1.2,"turant":1.4,"abhi":0.9
+};
+
+let recognition = null;
+let isListening = false;
+let fullTranscript = [];
+let alertShown = false;
+let hitKeywords = new Set();
+
+// ─── Score engine ──────────────────────────────────────────────────────────────
+function scoreText(text) {
+  const lower = text.toLowerCase();
+  let score = 0;
+  const found = [];
+  for (const kw of SCAM_KEYWORDS) {
+    if (lower.includes(kw)) {
+      score += (WEIGHT[kw] || 1.0) * 0.08;
+      found.push(kw);
+    }
+  }
+  // Extra: multiple keywords compound
+  if (found.length >= 3) score *= 1.3;
+  if (found.length >= 5) score *= 1.4;
+  return { score: Math.min(parseFloat(score.toFixed(3)), 1.0), found };
+}
+
+function getLabel(score) {
+  return score >= 0.71 ? "fraud" : score >= 0.41 ? "suspicious" : "safe";
+}
+
+// ─── UI updates ────────────────────────────────────────────────────────────────
+function updateGauge(score, label) {
+  const pct = Math.round(score * 100);
+  const color = label === "fraud" ? "var(--danger)" : label === "suspicious" ? "var(--warn)" : "var(--safe)";
+
+  document.getElementById("gauge-pct").textContent = pct + "%";
+  document.getElementById("gauge-pct").style.color = color;
+  document.getElementById("gauge-ring").style.borderColor = color + "55";
+  document.getElementById("gauge-inner").style.borderColor = color;
+  document.getElementById("bar-fill").style.width = pct + "%";
+  document.getElementById("bar-fill").style.background = color;
+
+  const badge = document.getElementById("risk-label");
+  const lblMap = { safe: "✅  SAFE", suspicious: "⚠️  SUSPICIOUS", fraud: "🚨  FRAUD RISK" };
+  badge.textContent = lblMap[label];
+  badge.style.color = color;
+  badge.style.background = color + "22";
+  badge.style.borderColor = color + "55";
+
+  // Decision box
+  const box = document.getElementById("decision-box");
+  const title = document.getElementById("decision-title");
+  const sub = document.getElementById("decision-sub");
+  const icon = box.querySelector(".decision-icon");
+
+  if (label === "fraud") {
+    box.style.borderColor = "var(--danger)";
+    box.style.background = "#FF174411";
+    icon.textContent = "🚨";
+    title.style.color = "var(--danger)";
+    title.textContent = "DECLINE CALL NOW!";
+    sub.textContent = "High-probability scam detected. Do NOT share OTP, UPI PIN, or bank details. Disconnect immediately!";
+    if (!alertShown) {
+      alertShown = true;
+      document.getElementById("overlay-score").textContent = pct + "%";
+      setTimeout(() => document.getElementById("warning-overlay").classList.add("show"), 400);
+    }
+  } else if (label === "suspicious") {
+    box.style.borderColor = "var(--warn)";
+    box.style.background = "#FFB30011";
+    icon.textContent = "⚠️";
+    title.style.color = "var(--warn)";
+    title.textContent = "BE CAREFUL";
+    sub.textContent = "Suspicious patterns detected. Stay alert — do not share personal or financial information.";
+  } else {
+    box.style.borderColor = "var(--safe)";
+    box.style.background = "#00E67611";
+    icon.textContent = "✅";
+    title.style.color = "var(--safe)";
+    title.textContent = "SAFE TO CONTINUE";
+    sub.textContent = "No scam patterns detected. This call appears legitimate.";
+  }
+}
+
+function addTranscriptLine(text, score, label) {
+  const box = document.getElementById("transcript-box");
+  if (box.querySelector("[style*='padding-top']")) box.innerHTML = "";
+  const color = label === "fraud" ? "var(--danger)" : label === "suspicious" ? "var(--warn)" : "var(--safe)";
+  const pct = Math.round(score * 100);
+  const now = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const div = document.createElement("div");
+  div.className = "t-line";
+  div.innerHTML = `<span class="t-time">${now}</span><span style="flex:1;color:var(--text)">"${text}"</span><span class="t-pct" style="background:${color}22;color:${color}">${pct}%</span>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function addTimeline(text, score, label) {
+  const tl = document.getElementById("timeline");
+  if (tl.querySelector("[style*='font-size:12px']")) tl.innerHTML = "";
+  const color = label === "fraud" ? "var(--danger)" : label === "suspicious" ? "var(--warn)" : "var(--safe)";
+  const pct = Math.round(score * 100);
+  const row = document.createElement("div");
+  row.className = "tl-row";
+  row.innerHTML = `<div class="tl-dot" style="background:${color}"></div><div class="tl-text">"${text.slice(0,60)}"</div><div class="tl-score" style="color:${color}">${pct}%</div>`;
+  tl.prepend(row);
+}
+
+function updateKeywords(found) {
+  const container = document.getElementById("keyword-tags");
+  found.forEach(kw => hitKeywords.add(kw));
+  if (hitKeywords.size === 0) return;
+  container.innerHTML = "";
+  hitKeywords.forEach(kw => {
+    const tag = document.createElement("span");
+    tag.className = "tag tag-hit";
+    tag.textContent = kw;
+    container.appendChild(tag);
+  });
+}
+
+// ─── Web Speech API ───────────────────────────────────────────────────────────
+function toggleMic() {
+  if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
+    alert("Speech recognition not supported. Please use Google Chrome or Microsoft Edge.");
+    return;
+  }
+  if (isListening) { stopListening(); } else { startListening(); }
+}
+
+function startListening() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous    = true;
+  recognition.interimResults = true;
+  recognition.lang          = "hi-IN"; // Hindi + English mixed
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById("mic-btn").className = "mic-btn listening";
+    document.getElementById("mic-icon").textContent = "⏹";
+    document.getElementById("mic-text").textContent = "Listening... (Click to Stop)";
+    document.getElementById("status-badge").textContent = "● LIVE";
+    document.getElementById("status-badge").style.background = "#FF174422";
+    document.getElementById("status-badge").style.color = "var(--danger)";
+    document.getElementById("status-badge").style.borderColor = "#FF174444";
+    alertShown = false;
+  };
+
+  recognition.onresult = (event) => {
+    let final_text = "";
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) {
+        final_text = event.results[i][0].transcript.trim();
+      }
+    }
+    if (!final_text) return;
+
+    fullTranscript.push(final_text);
+    if (fullTranscript.length > 15) fullTranscript.shift();
+    const rolling = fullTranscript.join(" ");
+
+    const { score, found } = scoreText(rolling);
+    const label = getLabel(score);
+
+    updateGauge(score, label);
+    addTranscriptLine(final_text, score, label);
+    addTimeline(final_text, score, label);
+    updateKeywords(found);
+  };
+
+  recognition.onerror = (e) => {
+    if (e.error === "not-allowed") {
+      alert("Microphone permission denied. Please allow mic access in your browser.");
+    }
+    stopListening();
+  };
+
+  recognition.onend = () => {
+    // Auto-restart if still supposed to be listening
+    if (isListening) recognition.start();
+  };
+
+  recognition.start();
+}
+
+function stopListening() {
+  isListening = false;
+  if (recognition) { recognition.stop(); recognition = null; }
+  document.getElementById("mic-btn").className = "mic-btn idle";
+  document.getElementById("mic-icon").textContent = "🎙️";
+  document.getElementById("mic-text").textContent = "Start Listening";
+  document.getElementById("status-badge").textContent = "● STOPPED";
+  document.getElementById("status-badge").style.background = "#00E67622";
+  document.getElementById("status-badge").style.color = "var(--safe)";
+  document.getElementById("status-badge").style.borderColor = "#00E67644";
+}
+
+// Reset
+function reset() {
+  stopListening();
+  fullTranscript = [];
+  hitKeywords.clear();
+  alertShown = false;
+  updateGauge(0, "safe");
+  document.getElementById("transcript-box").innerHTML = '<div style="color:var(--muted);text-align:center;padding-top:50px">Speak into your microphone...</div>';
+  document.getElementById("timeline").innerHTML = '<div style="color:var(--muted);font-size:12px">Timeline will appear as you speak...</div>';
+  document.getElementById("keyword-tags").innerHTML = '<span style="color:var(--muted);font-size:12px">None yet...</span>';
+  document.getElementById("warning-overlay").classList.remove("show");
+  document.getElementById("status-badge").textContent = "● READY";
+  document.getElementById("status-badge").style.background = "#00E67622";
+  document.getElementById("status-badge").style.color = "var(--safe)";
+  document.getElementById("status-badge").style.borderColor = "#00E67644";
+}
+</script>
+
+<!-- Reset button -->
+<div style="text-align:center;padding:12px">
+  <button onclick="reset()" style="background:var(--border);color:var(--text);border:none;padding:8px 20px;border-radius:10px;font-size:13px;cursor:pointer">↺ Reset</button>
+</div>
+
+</body>
+</html>

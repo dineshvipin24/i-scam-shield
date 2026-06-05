@@ -1,0 +1,48 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+subprojects {
+    def configureProject = { prj ->
+        if (prj.hasProperty("android")) {
+            prj.android {
+                if (namespace == null) {
+                    def manifestFile = prj.file("src/main/AndroidManifest.xml")
+                    if (manifestFile.exists()) {
+                        def contents = manifestFile.text
+                        def matcher = contents =~ /package="([^"]+)"/
+                        if (matcher.find()) {
+                            namespace = matcher.group(1)
+                        }
+                    }
+                    if (namespace == null) {
+                        namespace = "flutter.plugins." + prj.name.replaceAll("[^a-zA-Z0-9_]", "_")
+                    }
+                }
+            }
+        }
+    }
+
+    if (project.state.executed) {
+        configureProject(project)
+    } else {
+        project.afterEvaluate {
+            configureProject(project)
+        }
+    }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
