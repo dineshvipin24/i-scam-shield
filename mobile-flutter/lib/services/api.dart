@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String defaultBaseUrl = "http://192.168.0.108:8000"; // Local Wi-Fi IP for real device
+  static const String defaultBaseUrl = "https://i-scam-shield.onrender.com"; // Live production Render URL
 
   static Future<String> getBaseUrl() async {
     final prefs = await SharedPreferences.getInstance();
