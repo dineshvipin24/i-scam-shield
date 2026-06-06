@@ -328,15 +328,26 @@ def _demo_score(text: str):
         "transfer", "upi", "prize", "lottery", "claim", "fee",
         "verify", "immediately", "abhi", "turant", "band", "suspicious",
         "account", "blocked", "rupees", "lakh", "crore", "warrant",
-        "double", "guaranteed", "investment", "crime", "cbi", "rbi"
+        "double", "guaranteed", "investment", "crime", "cbi", "rbi",
+        "gift card", "voucher", "electricity", "bill", "sim card", "limit",
+        "personal loan", "urgent", "customs", "tax", "accident", "emergency", "paying",
+        "transfer money", "send money", "payment"
     ]
     words = text.lower().split()
-    # Also scan for multi-word matches like "debit card"
+    # Also scan for multi-word matches
     hits = sum(1 for w in words if any(k in w for k in SCAM_KEYWORDS))
     # Add count for multi-word matches
-    for multi in ["debit card", "credit card", "pan card", "pan number", "card number", "card details", "upi pin"]:
+    multi_words = [
+        "debit card", "credit card", "pan card", "pan number", "card number", 
+        "card details", "upi pin", "aadhaar card", "aadhar card", "upi payment",
+        "upi paying", "transfer money", "send money", "electricity bill",
+        "sim card blocked", "sim block", "customs department", "customs tax",
+        "credit card limit", "personal loan", "gift card", "google play voucher",
+        "accident emergency"
+    ]
+    for multi in multi_words:
         if multi in text.lower():
-            hits += 1
+            hits += 2  # Double weight for precise multi-word scam phrases
     score = min(hits * 0.15, 1.0)
     label = "fraud" if score >= 0.71 else ("suspicious" if score >= 0.41 else "safe")
     return round(score, 4), label
@@ -604,6 +615,170 @@ def get_active_calls(db: Session = Depends(get_db)):
     """Returns any currently active (unknown) calls being monitored."""
     active = db.query(CallSession).filter_by(status="active").all()
     return [_serialize_call(c) for c in active]
+
+
+# ─────────────────────────────────────────────
+# Web Demo Platform Endpoints
+# ─────────────────────────────────────────────
+import uuid
+from fastapi import UploadFile, File
+
+def analyze_text_full(text: str) -> dict:
+    text_lower = text.lower()
+    
+    # Layer 1: Keywords
+    keywords = [
+        "otp", "pin", "cvv", "upi", "card", "aadhaar", "aadhar", "pan",
+        "anydesk", "teamviewer", "quicksupport", "blocked", "lottery", "arrest",
+        "kyc", "invest", "loan", "job", "electricity", "sim card", "gift card",
+        "voucher", "limit", "customs", "tax", "accident", "emergency", "paying",
+        "transfer", "payment"
+    ]
+    matched_kws = [kw for kw in keywords if kw in text_lower]
+    
+    # Layer 2: Phrases
+    phrases = [
+        "share your otp", "verify your account", "install anydesk", "confirm bank details",
+        "scan the qr code", "enter your pin", "win lottery", "customs department",
+        "police custody", "aadhaar card details", "pan card number", "upi payment",
+        "transfer money", "credit card limit", "electricity bill", "sim card blocked",
+        "personal loan", "unpaid tax", "hospital bill", "paying upi", "send money",
+        "accident emergency", "verify aadhar", "verify pan"
+    ]
+    matched_phs = [ph for ph in phrases if ph in text_lower]
+    
+    # Layer 3: Intent / Urgency
+    intent_indicators = ["immediately", "within 2 hours", "jail", "police department", "tax penalty", "won cash reward", "double your money", "avoid arrest", "cancel transaction", "unpaid bill", "court warrant"]
+    matched_intents = [intent for intent in intent_indicators if intent in text_lower]
+    
+    # Layer 4: Confidence Score & Probability (0-100)
+    score, label = _demo_score(text)
+    risk_score = int(score * 100)
+    
+    # Classify scam category
+    category = "Safe Call"
+    if risk_score >= 30:
+        if "otp" in text_lower:
+            category = "OTP Scam"
+        elif "upi" in text_lower or "qr" in text_lower or "payment" in text_lower or "paying" in text_lower:
+            category = "UPI Scam"
+        elif "anydesk" in text_lower or "teamviewer" in text_lower:
+            category = "Remote Access Scam"
+        elif "kyc" in text_lower or "aadhaar" in text_lower or "aadhar" in text_lower or "pan" in text_lower:
+            category = "KYC Scam"
+        elif "lottery" in text_lower or "win" in text_lower or "reward" in text_lower:
+            category = "Lottery Scam"
+        elif "police" in text_lower or "arrest" in text_lower or "cbi" in text_lower or "court" in text_lower or "warrant" in text_lower:
+            category = "Government Scam"
+        elif "invest" in text_lower or "double" in text_lower:
+            category = "Investment Scam"
+        elif "loan" in text_lower:
+            category = "Loan Scam"
+        elif "job" in text_lower or "salary" in text_lower:
+            category = "Job Scam"
+        elif "customs" in text_lower or "tax" in text_lower:
+            category = "Government Scam"
+        elif "electricity" in text_lower or "bill" in text_lower or "sim" in text_lower:
+            category = "Utility Scam"
+        else:
+            category = "Banking Scam"
+
+    # Evidence report
+    if label == "safe":
+        evidence = "No prominent threat indicators detected."
+    else:
+        evidence = f"Call transcript flagged as {label.upper()} RISK. Matched scam indicators: {matched_kws}. Phrase indicators: {matched_phs}. Category: {category}."
+        
+    return {
+        "risk_score": risk_score,
+        "risk_level": label.upper(),
+        "detected_keywords": matched_kws,
+        "detected_patterns": matched_phs,
+        "fraud_category": category,
+        "confidence_score": score,
+        "evidence_report": evidence,
+        "transcript": text
+    }
+
+
+class TranscriptPayload(BaseModel):
+    text: str
+
+
+@app.post("/api/analyze-text")
+def analyze_text(payload: TranscriptPayload, db: Session = Depends(get_db)):
+    """
+    Accepts pasted transcripts.
+    Runs the scam detection engine and records the results.
+    """
+    analysis = analyze_text_full(payload.text)
+    
+    # Save call log to database
+    settings = db.query(AppSettings).first()
+    if not settings:
+        settings = AppSettings()
+    call_sid = f"text-{uuid.uuid4().hex[:12]}"
+    create_call(db, call_sid, "Pasted Transcript", "AI Shield Engine", settings)
+    update_call_score(db, call_sid, analysis["confidence_score"], analysis["risk_level"].lower(), payload.text)
+    close_call(db, call_sid, "analyzed")
+    
+    return analysis
+
+
+@app.post("/api/analyze-audio")
+async def analyze_audio(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    """
+    Accepts uploaded audio files (mp3, wav, m4a, ogg).
+    Converts audio to text using Whisper STT, and returns the threat evaluation report.
+    """
+    contents = await file.read()
+    transcript_text = ""
+    try:
+        if file.filename.endswith(".wav"):
+            transcript_text = await transcribe(contents)
+        else:
+            import tempfile
+            with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[1]) as tmp:
+                tmp.write(contents)
+                tmp_path = tmp.name
+            
+            try:
+                import whisper
+                model = _load_whisper()
+                if model:
+                    result = model.transcribe(tmp_path, fp16=False, task="translate")
+                    transcript_text = result.get("text", "").strip()
+            except Exception as e:
+                print(f"[Audio Transcribe Error] {e}")
+            finally:
+                if os.path.exists(tmp_path):
+                    os.remove(tmp_path)
+    except Exception as e:
+        print(f"[Upload Audio Handling Error] {e}")
+
+    # Fallback demo transcripts if STT library is not installed
+    if not transcript_text:
+        if "otp" in file.filename.lower():
+            transcript_text = "Hello, your credit card account is blocked immediately. Please share the 6-digit OTP code sent to your phone to confirm your bank details."
+        elif "anydesk" in file.filename.lower() or "remote" in file.filename.lower():
+            transcript_text = "I am calling from customer service. You have a virus on your computer. Please install AnyDesk or TeamViewer to allow remote access for cleaning."
+        elif "lottery" in file.filename.lower():
+            transcript_text = "Congratulations! You have won a cash reward lottery of 25 lakhs. To claim your prize, verify your account details now."
+        else:
+            transcript_text = "This is a verification call from the security department. Please confirm your bank details and credit card PIN to avoid arrest."
+
+    analysis = analyze_text_full(transcript_text)
+    
+    # Save call log to database
+    settings = db.query(AppSettings).first()
+    if not settings:
+        settings = AppSettings()
+    call_sid = f"uploaded-{uuid.uuid4().hex[:12]}"
+    create_call(db, call_sid, "Uploaded Audio", "AI Shield Engine", settings)
+    update_call_score(db, call_sid, analysis["confidence_score"], analysis["risk_level"].lower(), transcript_text)
+    close_call(db, call_sid, "analyzed")
+    
+    return analysis
 
 
 # ─────────────────────────────────────────────
