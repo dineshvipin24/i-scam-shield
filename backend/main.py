@@ -60,6 +60,14 @@ try:
 except Exception as e:
     print(f"[WARN] Deepfake Model not loaded/trained: {e}")
 
+# Instantiate the AI Voice Detector module
+try:
+    from voice_detector import AIVoiceDetector
+    voice_detector = AIVoiceDetector()
+except Exception as e:
+    print(f"[WARN] AI Voice Detector module not loaded: {e}")
+    voice_detector = None
+
 
 
 # ─────────────────────────────────────────────
@@ -399,18 +407,23 @@ def get_call(call_sid: str, db: Session = Depends(get_db)):
 
 def _serialize_call(c: CallSession) -> dict:
     return {
-        "id":           c.id,
-        "call_sid":     c.call_sid,
-        "from_number":  c.from_number,
-        "to_number":    c.to_number,
-        "started_at":   c.started_at.isoformat() if c.started_at else None,
-        "ended_at":     c.ended_at.isoformat()   if c.ended_at   else None,
-        "duration_s":   c.duration_s,
-        "final_score":  c.final_score,
-        "risk_label":   c.risk_label,
-        "status":       c.status,
-        "action_taken": c.action_taken,
-        "transcript":   c.full_transcript,
+        "id":                     c.id,
+        "call_sid":               c.call_sid,
+        "from_number":            c.from_number,
+        "to_number":              c.to_number,
+        "started_at":             c.started_at.isoformat() if c.started_at else None,
+        "ended_at":               c.ended_at.isoformat()   if c.ended_at   else None,
+        "duration_s":             c.duration_s,
+        "final_score":            c.final_score,
+        "risk_label":             c.risk_label,
+        "status":                 c.status,
+        "action_taken":           c.action_taken,
+        "transcript":             c.full_transcript,
+        "aiVoiceScore":           c.aiVoiceScore,
+        "humanVoiceProbability":  c.humanVoiceProbability,
+        "aiVoiceProbability":     c.aiVoiceProbability,
+        "voiceClassification":    c.voiceClassification,
+        "voiceConfidence":        c.voiceConfidence,
     }
 
 
@@ -725,13 +738,29 @@ def analyze_text(payload: TranscriptPayload, db: Session = Depends(get_db)):
     return analysis
 
 
+@app.post("/api/analyze-ai-voice")
+async def analyze_ai_voice(file: UploadFile = File(...)):
+    """
+    Accepts uploaded audio files.
+    Runs the AI voice detector (deepfake classifier & feature extractor).
+    """
+    contents = await file.read()
+    if not voice_detector:
+        return {"error": "Voice Detector not initialized"}
+    return voice_detector.analyze_audio_bytes(contents)
+
+
+@app.post("/api/analyze-complete")
 @app.post("/api/analyze-audio")
 async def analyze_audio(file: UploadFile = File(...), db: Session = Depends(get_db)):
     """
-    Accepts uploaded audio files (mp3, wav, m4a, ogg).
-    Converts audio to text using Whisper STT, and returns the threat evaluation report.
+    Accepts uploaded audio files.
+    Runs both Speech-to-Text scam evaluation and AI Voice classification in parallel.
+    Saves the combined findings into the database.
     """
     contents = await file.read()
+    
+    # 1. Transcribe audio to text
     transcript_text = ""
     try:
         if file.filename.endswith(".wav"):
@@ -767,18 +796,84 @@ async def analyze_audio(file: UploadFile = File(...), db: Session = Depends(get_
         else:
             transcript_text = "This is a verification call from the security department. Please confirm your bank details and credit card PIN to avoid arrest."
 
-    analysis = analyze_text_full(transcript_text)
+    # 2. Run Scam text analysis
+    scam_analysis = analyze_text_full(transcript_text)
     
-    # Save call log to database
+    # 3. Run AI Voice analysis
+    if voice_detector:
+        voice_analysis = voice_detector.analyze_audio_bytes(contents)
+    else:
+        # Fallback if module failed to load
+        voice_analysis = {
+            "ai_voice_score": 0.0,
+            "risk_level": "Likely Human",
+            "voice_classification": "Likely Human",
+            "confidence_score": 90.0,
+            "human_voice_probability": 100.0,
+            "ai_voice_probability": 0.0,
+            "features": {},
+            "reasoning": "Voice detection module unavailable."
+        }
+    
+    # 4. Combined Threat Score calculation
+    scam_score = scam_analysis["risk_score"]
+    ai_voice_score = voice_analysis["ai_voice_score"]
+    combined_score = round(0.5 * scam_score + 0.5 * ai_voice_score, 1)
+    
+    # Combined risk classification
+    if combined_score >= 61:
+        combined_risk_level = "HIGH"
+    elif combined_score >= 31:
+        combined_risk_level = "MEDIUM"
+    else:
+        combined_risk_level = "SAFE"
+
+    # Save complete call log to database
     settings = db.query(AppSettings).first()
     if not settings:
         settings = AppSettings()
+        
     call_sid = f"uploaded-{uuid.uuid4().hex[:12]}"
-    create_call(db, call_sid, "Uploaded Audio", "AI Shield Engine", settings)
-    update_call_score(db, call_sid, analysis["confidence_score"], analysis["risk_level"].lower(), transcript_text)
-    close_call(db, call_sid, "analyzed")
     
-    return analysis
+    call = CallSession(
+        call_sid=call_sid,
+        from_number="Uploaded Audio",
+        to_number="AI Shield Engine",
+        threshold_used=settings.risk_threshold,
+        auto_hangup=settings.auto_hangup,
+        final_score=combined_score / 100.0,
+        risk_label=combined_risk_level.lower(),
+        status="completed",
+        full_transcript=transcript_text,
+        action_taken="analyzed",
+        action_at=datetime.utcnow(),
+        aiVoiceScore=ai_voice_score,
+        humanVoiceProbability=voice_analysis["human_voice_probability"],
+        aiVoiceProbability=voice_analysis["ai_voice_probability"],
+        voiceClassification=voice_analysis["voice_classification"],
+        voiceConfidence=voice_analysis["confidence_score"]
+    )
+    db.add(call)
+    db.commit()
+    
+    # Add score events for graphing in frontend
+    db.add(ScoreEvent(
+        call_sid=call_sid,
+        score=combined_score / 100.0,
+        label=combined_risk_level.lower(),
+        transcript_chunk=transcript_text
+    ))
+    db.commit()
+    
+    return {
+        "scam_analysis": scam_analysis,
+        "voice_analysis": voice_analysis,
+        "combined_analysis": {
+            "combined_threat_score": combined_score,
+            "combined_risk_level": combined_risk_level,
+            "call_sid": call_sid
+        }
+    }
 
 
 # ─────────────────────────────────────────────

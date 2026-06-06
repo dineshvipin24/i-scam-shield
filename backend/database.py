@@ -53,6 +53,13 @@ class CallSession(Base):
     risk_label  = Column(String(16), default="safe")  # safe|suspicious|fraud
     status      = Column(String(16), default="active")  # active|completed|blocked
 
+    # AI Voice Analysis
+    aiVoiceScore          = Column(Float, default=0.0)
+    humanVoiceProbability = Column(Float, default=0.0)
+    aiVoiceProbability    = Column(Float, default=0.0)
+    voiceClassification   = Column(String(32), default="Uncertain")
+    voiceConfidence       = Column(Float, default=0.0)
+
     # Transcript
     full_transcript = Column(Text, default="")
 
