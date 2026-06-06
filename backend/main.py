@@ -83,9 +83,9 @@ app.add_middleware(
 # call_sid → asyncio.Queue
 live_queues: dict[str, asyncio.Queue] = {}
 
-# Serve HTML demos from one directory up
-DEMO_FILE = os.path.join(os.path.dirname(__file__), "..", "demo.html")
-MIC_DEMO_FILE = os.path.join(os.path.dirname(__file__), "..", "mic_demo.html")
+# Serve HTML demos from the local backend directory
+DEMO_FILE = os.path.join(os.path.dirname(__file__), "demo.html")
+MIC_DEMO_FILE = os.path.join(os.path.dirname(__file__), "mic_demo.html")
 
 @app.get("/")
 def root():

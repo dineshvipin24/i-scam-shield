@@ -9,14 +9,12 @@ rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
-subprojects {
-    project.evaluationDependsOn(":app")
-}
 
 subprojects {
     def configureProject = { prj ->
         if (prj.hasProperty("android")) {
             prj.android {
+                compileSdkVersion 34
                 if (namespace == null) {
                     def manifestFile = prj.file("src/main/AndroidManifest.xml")
                     if (manifestFile.exists()) {
@@ -41,6 +39,10 @@ subprojects {
             configureProject(project)
         }
     }
+}
+
+subprojects {
+    project.evaluationDependsOn(":app")
 }
 
 tasks.register("clean", Delete) {
