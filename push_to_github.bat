@@ -6,6 +6,7 @@ echo.
 git add .
 git commit -m "Move demo.html to backend for Render deployment"
 git branch -M main
+git pull origin main --rebase
 git push -u origin main
 
 echo.
