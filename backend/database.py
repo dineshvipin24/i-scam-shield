@@ -15,17 +15,36 @@ from sqlalchemy.pool import StaticPool
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH  = os.getenv("DB_PATH", os.path.join(BASE_DIR, "scam_shield.db"))
 
-engine = create_engine(
-    f"sqlite:///{DB_PATH}",
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-)
+try:
+    engine = create_engine(
+        f"sqlite:///{DB_PATH}",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    # Test connection and check if WAL can be set
+    with engine.connect() as conn:
+        conn.execute("PRAGMA journal_mode=WAL")
+except Exception as e:
+    print(f"[WARN] SQLite file-based database at {DB_PATH} failed to initialize ({e}). Falling back to in-memory database.")
+    DB_PATH = ":memory:"
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
 
-# Enable WAL mode for better concurrent reads
+# Enable WAL mode if possible, always enable foreign keys
 @event.listens_for(engine, "connect")
 def _set_wal(dbapi_conn, _):
-    dbapi_conn.execute("PRAGMA journal_mode=WAL")
-    dbapi_conn.execute("PRAGMA foreign_keys=ON")
+    if DB_PATH != ":memory:":
+        try:
+            dbapi_conn.execute("PRAGMA journal_mode=WAL")
+        except Exception as e:
+            print(f"[WARN] Failed to set WAL mode: {e}")
+    try:
+        dbapi_conn.execute("PRAGMA foreign_keys=ON")
+    except Exception as e:
+        print(f"[WARN] Failed to enable foreign keys: {e}")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
@@ -117,6 +136,9 @@ def init_db():
         Base.metadata.create_all(bind=engine)
         db = SessionLocal()
         try:
+            # Force schema validation of CallSession to trigger OperationalError on mismatch
+            db.query(CallSession).first()
+            
             if not db.query(AppSettings).first():
                 db.add(AppSettings())
                 db.commit()

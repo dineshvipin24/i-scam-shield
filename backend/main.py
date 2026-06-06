@@ -339,7 +339,8 @@ def _demo_score(text: str):
         "double", "guaranteed", "investment", "crime", "cbi", "rbi",
         "gift card", "voucher", "electricity", "bill", "sim card", "limit",
         "personal loan", "urgent", "customs", "tax", "accident", "emergency", "paying",
-        "transfer money", "send money", "payment"
+        "transfer money", "send money", "payment", "sbi", "hdfc", "icici", "paytm",
+        "phonepe", "gpay"
     ]
     words = text.lower().split()
     # Also scan for multi-word matches
@@ -370,39 +371,51 @@ def list_calls(
     skip: int = 0,
     db: Session = Depends(get_db)
 ):
-    calls = (
-        db.query(CallSession)
-        .order_by(CallSession.started_at.desc())
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
-    return [_serialize_call(c) for c in calls]
+    try:
+        calls = (
+            db.query(CallSession)
+            .order_by(CallSession.started_at.desc())
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+        return [_serialize_call(c) for c in calls]
+    except Exception as e:
+        print(f"[WARN] Failed to list calls from DB: {e}")
+        db.rollback()
+        return []
 
 
 @app.get("/api/calls/{call_sid}")
 def get_call(call_sid: str, db: Session = Depends(get_db)):
-    call = db.query(CallSession).filter_by(call_sid=call_sid).first()
-    if not call:
-        raise HTTPException(status_code=404, detail="Call not found")
-    events = (
-        db.query(ScoreEvent)
-        .filter_by(call_sid=call_sid)
-        .order_by(ScoreEvent.timestamp)
-        .all()
-    )
-    return {
-        **_serialize_call(call),
-        "score_events": [
-            {
-                "timestamp": e.timestamp.isoformat(),
-                "score": e.score,
-                "label": e.label,
-                "transcript": e.transcript_chunk,
-            }
-            for e in events
-        ],
-    }
+    try:
+        call = db.query(CallSession).filter_by(call_sid=call_sid).first()
+        if not call:
+            raise HTTPException(status_code=404, detail="Call not found")
+        events = (
+            db.query(ScoreEvent)
+            .filter_by(call_sid=call_sid)
+            .order_by(ScoreEvent.timestamp)
+            .all()
+        )
+        return {
+            **_serialize_call(call),
+            "score_events": [
+                {
+                    "timestamp": e.timestamp.isoformat(),
+                    "score": e.score,
+                    "label": e.label,
+                    "transcript": e.transcript_chunk,
+                }
+                for e in events
+            ],
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[WARN] Failed to retrieve call {call_sid} from DB: {e}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Database error")
 
 
 def _serialize_call(c: CallSession) -> dict:
@@ -439,25 +452,45 @@ class SettingsUpdate(BaseModel):
 
 @app.get("/api/settings")
 def get_settings(db: Session = Depends(get_db)):
-    s = db.query(AppSettings).first()
-    return {
-        "risk_threshold":   s.risk_threshold,
-        "auto_hangup":      s.auto_hangup,
-        "alert_suspicious": s.alert_suspicious,
-        "forward_to":       s.forward_to,
-    }
+    try:
+        s = db.query(AppSettings).first()
+        if not s:
+            s = AppSettings()
+        return {
+            "risk_threshold":   s.risk_threshold,
+            "auto_hangup":      s.auto_hangup,
+            "alert_suspicious": s.alert_suspicious,
+            "forward_to":       s.forward_to,
+        }
+    except Exception as e:
+        print(f"[WARN] Failed to query settings from DB: {e}")
+        db.rollback()
+        return {
+            "risk_threshold":   0.71,
+            "auto_hangup":      True,
+            "alert_suspicious": True,
+            "forward_to":       None,
+        }
 
 
 @app.post("/api/settings")
 def update_settings(body: SettingsUpdate, db: Session = Depends(get_db)):
-    s = db.query(AppSettings).first()
-    if body.risk_threshold   is not None: s.risk_threshold   = body.risk_threshold
-    if body.auto_hangup      is not None: s.auto_hangup      = body.auto_hangup
-    if body.alert_suspicious is not None: s.alert_suspicious = body.alert_suspicious
-    if body.forward_to       is not None: s.forward_to       = body.forward_to
-    s.updated_at = datetime.utcnow()
-    db.commit()
-    return {"status": "ok"}
+    try:
+        s = db.query(AppSettings).first()
+        if not s:
+            s = AppSettings()
+            db.add(s)
+        if body.risk_threshold   is not None: s.risk_threshold   = body.risk_threshold
+        if body.auto_hangup      is not None: s.auto_hangup      = body.auto_hangup
+        if body.alert_suspicious is not None: s.alert_suspicious = body.alert_suspicious
+        if body.forward_to       is not None: s.forward_to       = body.forward_to
+        s.updated_at = datetime.utcnow()
+        db.commit()
+        return {"status": "ok"}
+    except Exception as e:
+        print(f"[WARN] Failed to update settings in DB: {e}")
+        db.rollback()
+        return {"status": "error", "message": str(e)}
 
 
 @app.post("/api/train")
@@ -520,11 +553,16 @@ async def live_events(call_sid: str):
 # ─────────────────────────────────────────────
 @app.get("/api/stats")
 def get_stats(db: Session = Depends(get_db)):
-    total   = db.query(CallSession).count()
-    blocked = db.query(CallSession).filter_by(status="blocked").count()
-    safe    = db.query(CallSession).filter_by(risk_label="safe").count()
-    susp    = db.query(CallSession).filter_by(risk_label="suspicious").count()
-    fraud   = db.query(CallSession).filter_by(risk_label="fraud").count()
+    try:
+        total   = db.query(CallSession).count()
+        blocked = db.query(CallSession).filter_by(status="blocked").count()
+        safe    = db.query(CallSession).filter_by(risk_label="safe").count()
+        susp    = db.query(CallSession).filter_by(risk_label="suspicious").count()
+        fraud   = db.query(CallSession).filter_by(risk_label="fraud").count()
+    except Exception as e:
+        print(f"[WARN] Failed to query stats: {e}")
+        db.rollback()
+        total, blocked, safe, susp, fraud = 0, 0, 0, 0, 0
     return {
         "total_calls":      total,
         "blocked_calls":    blocked,
@@ -645,7 +683,7 @@ def analyze_text_full(text: str) -> dict:
         "anydesk", "teamviewer", "quicksupport", "blocked", "lottery", "arrest",
         "kyc", "invest", "loan", "job", "electricity", "sim card", "gift card",
         "voucher", "limit", "customs", "tax", "accident", "emergency", "paying",
-        "transfer", "payment"
+        "transfer", "payment", "sbi", "hdfc", "icici", "paytm", "phonepe", "gpay"
     ]
     matched_kws = [kw for kw in keywords if kw in text_lower]
     
@@ -726,14 +764,18 @@ def analyze_text(payload: TranscriptPayload, db: Session = Depends(get_db)):
     """
     analysis = analyze_text_full(payload.text)
     
-    # Save call log to database
-    settings = db.query(AppSettings).first()
-    if not settings:
-        settings = AppSettings()
-    call_sid = f"text-{uuid.uuid4().hex[:12]}"
-    create_call(db, call_sid, "Pasted Transcript", "AI Shield Engine", settings)
-    update_call_score(db, call_sid, analysis["confidence_score"], analysis["risk_level"].lower(), payload.text)
-    close_call(db, call_sid, "analyzed")
+    try:
+        # Save call log to database
+        settings = db.query(AppSettings).first()
+        if not settings:
+            settings = AppSettings()
+        call_sid = f"text-{uuid.uuid4().hex[:12]}"
+        create_call(db, call_sid, "Pasted Transcript", "AI Shield Engine", settings)
+        update_call_score(db, call_sid, analysis["confidence_score"], analysis["risk_level"].lower(), payload.text)
+        close_call(db, call_sid, "analyzed")
+    except Exception as e:
+        print(f"[WARN] Failed to write text analysis to DB: {e}")
+        db.rollback()
     
     return analysis
 
