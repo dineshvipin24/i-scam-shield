@@ -3,21 +3,56 @@ import os
 
 class AudioProcessor:
     def __init__(self):
+        print("    [DEBUG AP] Constructor started...")
         self.whisper_available = False
         self.librosa_available = False
         
-        try:
-            import whisper
-            self.model = whisper.load_model("tiny")
-            self.whisper_available = True
-        except ImportError:
-            print("[Dependency Notice] Whisper is not installed on this local Python environment. Using fallback mock transcription.")
+        print("    [DEBUG AP] Checking if whisper is safe to import...")
+        is_whisper_safe = self._check_safe("whisper")
+        print(f"    [DEBUG AP] is_whisper_safe = {is_whisper_safe}")
+        
+        if is_whisper_safe:
+            print("    [DEBUG AP] Importing whisper...")
+            try:
+                import whisper
+                print("    [DEBUG AP] Loading whisper model...")
+                self.model = whisper.load_model("tiny")
+                self.whisper_available = True
+                print("    [DEBUG AP] Whisper model loaded successfully.")
+            except Exception as e:
+                print(f"[Dependency Notice] Whisper failed to load ({e}). Using fallback mock transcription.")
+        else:
+            print("[Dependency Notice] Whisper is unavailable or unstable on this system. Using fallback mock transcription.")
             
+        print("    [DEBUG AP] Checking if librosa is safe to import...")
+        is_librosa_safe = self._check_safe("librosa")
+        print(f"    [DEBUG AP] is_librosa_safe = {is_librosa_safe}")
+        
+        if is_librosa_safe:
+            print("    [DEBUG AP] Importing librosa...")
+            try:
+                import librosa
+                self.librosa_available = True
+                print("    [DEBUG AP] Librosa imported successfully.")
+            except Exception as e:
+                print(f"[Dependency Notice] Librosa failed to load ({e}). Using fallback acoustic metrics.")
+        else:
+            print("[Dependency Notice] Librosa is unavailable or unstable on this system. Using fallback acoustic metrics.")
+
+    def _check_safe(self, module_name: str) -> bool:
+        import subprocess
+        import sys
         try:
-            import librosa
-            self.librosa_available = True
-        except ImportError:
-            print("[Dependency Notice] Librosa is not installed. Using fallback acoustic metrics.")
+            # Check if importing the module is stable in a brief subprocess
+            res = subprocess.run(
+                [sys.executable, "-c", f"import {module_name}"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=5
+            )
+            return res.returncode == 0
+        except Exception:
+            return False
 
     def transcribe(self, file_path: str) -> str:
         """Transcribes audio file to string text."""

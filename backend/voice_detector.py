@@ -7,7 +7,10 @@ import os
 import io
 import wave
 import numpy as np
-from scipy.fftpack import dct
+try:
+    from scipy.fftpack import dct
+except ImportError:
+    dct = None
 
 # Try importing av for advanced container formats decoding
 try:
@@ -292,16 +295,35 @@ def classify_voice_from_features(features: dict) -> tuple[float, str, float]:
 
 class AIVoiceDetector:
     def __init__(self):
-        # We try to load PyTorch engine if available
+        # We try to load PyTorch engine if available and stable
         self.pytorch_loaded = False
+        self.pytorch_detector = None
+        
+        if self._check_safe("torch"):
+            try:
+                from model.deepfake_classifier import DeepfakeInference
+                self.pytorch_detector = DeepfakeInference()
+                if hasattr(self.pytorch_detector, 'model_loaded') and self.pytorch_detector.model_loaded:
+                    self.pytorch_loaded = True
+            except Exception as e:
+                print(f"[AIVoiceDetector] PyTorch model initialization bypassed: {e}")
+                self.pytorch_detector = None
+        else:
+            print("[AIVoiceDetector] PyTorch is unavailable or unstable on this system. Bypassing PyTorch detector.")
+
+    def _check_safe(self, module_name: str) -> bool:
+        import subprocess
+        import sys
         try:
-            from model.deepfake_classifier import DeepfakeInference
-            self.pytorch_detector = DeepfakeInference()
-            if hasattr(self.pytorch_detector, 'model_loaded') and self.pytorch_detector.model_loaded:
-                self.pytorch_loaded = True
-        except Exception as e:
-            print(f"[AIVoiceDetector] PyTorch model initialization bypassed: {e}")
-            self.pytorch_detector = None
+            res = subprocess.run(
+                [sys.executable, "-c", f"import {module_name}"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=5
+            )
+            return res.returncode == 0
+        except Exception:
+            return False
 
     def analyze_audio_bytes(self, file_bytes: bytes) -> dict:
         """

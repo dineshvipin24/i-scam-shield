@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,26 +24,32 @@
         }
     </script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         body {
             font-family: 'Outfit', sans-serif;
             background-color: #060913;
         }
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
+
         ::-webkit-scrollbar-track {
             background: #090d16;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #1e293b;
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: #334155;
         }
+
         .glass-card {
             background: rgba(17, 23, 38, 0.7);
             backdrop-filter: blur(12px);
@@ -57,6 +64,7 @@
     <!-- Babel for JSX compilation -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
+
 <body class="text-slate-100 min-height-screen">
 
     <div id="root"></div>
@@ -101,7 +109,7 @@
             const [analysisResult, setAnalysisResult] = useState(null);
             const [loading, setLoading] = useState(false);
             const [selectedCall, setSelectedCall] = useState(null);
-            
+
             // Microphone States
             const [isListening, setIsListening] = useState(false);
             const [micTranscript, setMicTranscript] = useState([]);
@@ -111,6 +119,12 @@
             const [micCategory, setMicCategory] = useState('Safe Call');
             const [alertShown, setAlertShown] = useState(false);
             const recognitionRef = useRef(null);
+
+            // High Risk Siren Alarm System
+            const alarmTimerRef = useRef(null);
+            const alarmStopTimeoutRef = useRef(null);
+            const [isAlarmPlaying, setIsAlarmPlaying] = useState(false);
+            const [isCallTerminated, setIsCallTerminated] = useState(false);
 
             // History & Stats
             const [history, setHistory] = useState([]);
@@ -136,8 +150,77 @@
                     .catch(e => console.error("Error fetching stats", e));
             };
 
+            // Audio Context initialization helper (must be called from a user gesture)
+            const initAudioContext = () => {
+                if (!window.sharedAudioContext) {
+                    window.sharedAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (window.sharedAudioContext.state === 'suspended') {
+                    window.sharedAudioContext.resume();
+                }
+            };
+
+            const playBeep = (freq, duration, count = 1, interval = 150) => {
+                try {
+                    initAudioContext();
+                    const audioCtx = window.sharedAudioContext;
+                    let currentCount = 0;
+
+                    const triggerSingleBeep = () => {
+                        if (currentCount >= count) return;
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + duration);
+                        currentCount++;
+                        setTimeout(triggerSingleBeep, interval);
+                    };
+
+                    triggerSingleBeep();
+                } catch (e) {
+                    console.error("Audio error", e);
+                }
+            };
+
+            const triggerHighRiskAlarm = () => {
+                initAudioContext();
+                if (alarmTimerRef.current) return; // already running
+                setIsAlarmPlaying(true);
+                console.log("[ALARM] Triggering high risk alarm. Will continue for 30s.");
+
+                const playBeepLocal = () => {
+                    playBeep(950, 0.25, 2, 120);
+                };
+
+                playBeepLocal();
+                alarmTimerRef.current = setInterval(playBeepLocal, 1500);
+
+                alarmStopTimeoutRef.current = setTimeout(() => {
+                    stopHighRiskAlarm();
+                }, 30000);
+            };
+
+            const stopHighRiskAlarm = () => {
+                setIsAlarmPlaying(false);
+                if (alarmTimerRef.current) {
+                    clearInterval(alarmTimerRef.current);
+                    alarmTimerRef.current = null;
+                }
+                if (alarmStopTimeoutRef.current) {
+                    clearTimeout(alarmStopTimeoutRef.current);
+                    alarmStopTimeoutRef.current = null;
+                }
+                console.log("[ALARM] Alarm stopped.");
+            };
+
             // Analyze Pasted Text
             const handleAnalyzeText = (textToAnalyze) => {
+                initAudioContext();
                 const text = textToAnalyze || pastedText;
                 if (!text.trim()) return;
                 setLoading(true);
@@ -146,42 +229,68 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text })
                 })
-                .then(res => res.json())
-                .then(data => {
-                    setAnalysisResult(data);
-                    setLoading(false);
-                })
-                .catch(e => {
-                    console.error(e);
-                    setLoading(false);
-                });
+                    .then(res => res.json())
+                    .then(data => {
+                        setAnalysisResult(data);
+                        setLoading(false);
+                        if (data.risk_score >= 100) {
+                            stopHighRiskAlarm();
+                            setIsCallTerminated(true);
+                            playBeep(400, 0.5, 3, 200);
+                        } else if (data.risk_score >= 70) {
+                            setIsCallTerminated(false);
+                            triggerHighRiskAlarm();
+                        } else {
+                            setIsCallTerminated(false);
+                        }
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        setLoading(false);
+                    });
             };
 
             // Analyze Audio File (Complete Scam + AI Voice Analysis)
-            const handleAnalyzeAudio = (e) => {
-                e.preventDefault();
-                if (!audioFile) return;
+            const handleAnalyzeAudio = (e, fileToAnalyze) => {
+                if (e) e.preventDefault();
+                initAudioContext();
+                const file = fileToAnalyze || audioFile;
+                if (!file) return;
                 setLoading(true);
                 const formData = new FormData();
-                formData.append('file', audioFile);
+                formData.append('file', file);
 
                 fetch('/api/analyze-complete', {
                     method: 'POST',
                     body: formData
                 })
-                .then(res => res.json())
-                .then(data => {
-                    setAnalysisResult(data);
-                    setLoading(false);
-                })
-                .catch(e => {
-                    console.error(e);
-                    setLoading(false);
-                });
+                    .then(res => res.json())
+                    .then(data => {
+                        setAnalysisResult(data);
+                        setLoading(false);
+                        const isAudio = !!data?.combined_analysis;
+                        const scam = isAudio ? data.scam_analysis.risk_score : (data?.risk_score || 0);
+                        const comb = isAudio ? data.combined_analysis.combined_threat_score : scam;
+                        if (comb >= 100) {
+                            stopHighRiskAlarm();
+                            setIsCallTerminated(true);
+                            playBeep(400, 0.5, 3, 200);
+                        } else if (comb >= 70) {
+                            setIsCallTerminated(false);
+                            triggerHighRiskAlarm();
+                        } else {
+                            setIsCallTerminated(false);
+                        }
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        setLoading(false);
+                    });
             };
 
             // Live Mic Logic
             const toggleMic = () => {
+                initAudioContext();
                 if (isListening) {
                     stopListening();
                 } else {
@@ -209,6 +318,7 @@
                     setMicRiskLevel('SAFE');
                     setMicCategory('Safe Call');
                     setAlertShown(false);
+                    setIsCallTerminated(false);
                 };
 
                 rec.onresult = (event) => {
@@ -223,26 +333,28 @@
                     setMicTranscript(prev => {
                         const updated = [...prev, finalResult];
                         const rollingText = updated.join(" ");
-                        
+
                         fetch('/api/analyze-text', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ text: rollingText })
                         })
-                        .then(res => res.json())
-                        .then(data => {
-                            setMicRiskScore(data.risk_score);
-                            setMicRiskLevel(data.risk_level);
-                            setMicCategory(data.fraud_category);
-                            setMicKeywords(data.detected_keywords || []);
-                            
-                            if (data.risk_level === 'HIGH' && !alertShown) {
-                                setAlertShown(true);
-                                playBeep(1000, 0.15, 3, 100);
-                            } else if (data.risk_level === 'MEDIUM' && !alertShown) {
-                                playBeep(700, 0.2, 2, 200);
-                            }
-                        });
+                            .then(res => res.json())
+                            .then(data => {
+                                setMicRiskScore(data.risk_score);
+                                setMicRiskLevel(data.risk_level);
+                                setMicCategory(data.fraud_category);
+                                setMicKeywords(data.detected_keywords || []);
+
+                                if (data.risk_score >= 100) {
+                                    stopListening();
+                                    stopHighRiskAlarm();
+                                    setIsCallTerminated(true);
+                                    playBeep(400, 0.5, 3, 200);
+                                } else if (data.risk_score >= 70 || data.risk_level === 'HIGH') {
+                                    triggerHighRiskAlarm();
+                                }
+                            });
                         return updated;
                     });
                 };
@@ -267,49 +379,25 @@
                 }
             };
 
-            const playBeep = (freq, duration, count = 1, interval = 150) => {
-                try {
-                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    let currentCount = 0;
-                    
-                    const triggerSingleBeep = () => {
-                        if (currentCount >= count) return;
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-                        osc.start();
-                        osc.stop(audioCtx.currentTime + duration);
-                        currentCount++;
-                        setTimeout(triggerSingleBeep, interval);
-                    };
-                    
-                    triggerSingleBeep();
-                } catch (e) {
-                    console.error("Audio error", e);
-                }
-            };
-
+            // Non-critical medium risk background chime logic
             useEffect(() => {
                 let intervalId = null;
-                if (isListening && (micRiskLevel === 'HIGH' || micRiskLevel === 'MEDIUM')) {
-                    const freq = micRiskLevel === 'HIGH' ? 950 : 650;
-                    const count = micRiskLevel === 'HIGH' ? 2 : 1;
+                const score = activeTab === 'live' ? micRiskScore : 0;
+                const isMedium = score >= 31 && score < 70;
+
+                if (isListening && isMedium) {
                     intervalId = setInterval(() => {
-                        playBeep(freq, 0.12, count, 100);
-                    }, 2500);
+                        playBeep(700, 0.15, 1, 100);
+                    }, 3000);
                 }
                 return () => {
                     if (intervalId) clearInterval(intervalId);
                 };
-            }, [isListening, micRiskLevel]);
+            }, [isListening, micRiskScore, activeTab]);
 
             // Normalized Analysis Mapping
             const isAudioAnalysis = !!analysisResult?.combined_analysis;
-            
+
             const scamScore = isAudioAnalysis ? analysisResult.scam_analysis.risk_score : (analysisResult?.risk_score || 0);
             const scamRiskLevel = isAudioAnalysis ? analysisResult.scam_analysis.risk_level : (analysisResult?.risk_level || 'SAFE');
             const scamCategory = isAudioAnalysis ? analysisResult.scam_analysis.fraud_category : (analysisResult?.fraud_category || 'Safe Call');
@@ -330,7 +418,7 @@
 
             // Color Class helpers
             const getRiskColorClass = (score) => {
-                if (score >= 61) return 'text-rose-400 border-rose-500/20 bg-rose-500/5 shadow-rose-500/10';
+                if (score >= 70) return 'text-rose-400 border-rose-500/20 bg-rose-500/5 shadow-rose-500/10';
                 if (score >= 31) return 'text-amber-400 border-amber-500/20 bg-amber-500/5 shadow-amber-500/10';
                 return 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5 shadow-emerald-500/10';
             };
@@ -366,27 +454,37 @@
 
                     {/* Navigation Tabs */}
                     <div class="flex flex-wrap justify-center bg-slate-950 border-b border-slate-900 px-6 py-3 gap-2 md:gap-4">
-                        <button onClick={() => { setActiveTab('live'); setAnalysisResult(null); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'live' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>🎙️ Live Mic Monitor</button>
-                        <button onClick={() => { setActiveTab('audio'); setAnalysisResult(null); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'audio' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📁 Upload Audio File</button>
-                        <button onClick={() => { setActiveTab('transcript'); setAnalysisResult(null); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'transcript' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📝 Paste Transcript</button>
-                        <button onClick={() => { setActiveTab('history'); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'history' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📊 Call Logs & History</button>
-                        <button onClick={() => { setActiveTab('analytics'); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'analytics' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📈 System Analytics</button>
+                        <button onClick={() => { setActiveTab('live'); setAnalysisResult(null); stopHighRiskAlarm(); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'live' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>🎙️ Live Mic Monitor</button>
+                        <button onClick={() => { setActiveTab('audio'); setAnalysisResult(null); stopHighRiskAlarm(); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'audio' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📁 Upload Audio File</button>
+                        <button onClick={() => { setActiveTab('transcript'); setAnalysisResult(null); stopHighRiskAlarm(); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'transcript' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📝 Paste Transcript</button>
+                        <button onClick={() => { setActiveTab('history'); stopHighRiskAlarm(); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'history' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📊 Call Logs & History</button>
+                        <button onClick={() => { setActiveTab('analytics'); stopHighRiskAlarm(); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'analytics' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📈 System Analytics</button>
                     </div>
 
                     {/* Main Layout Grid */}
                     <main class="flex-1 max-w-7xl w-full mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        
+
                         {/* LEFT: Input Column */}
                         <div class="lg:col-span-7 flex flex-col gap-6">
-                            
+
                             {/* Tab 1: Live Mic Monitor */}
                             {activeTab === 'live' && (
                                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4">
                                     <h2 class="text-lg font-bold">🎙️ Continuous Offline Speech Monitoring</h2>
                                     <p class="text-sm text-slate-400">
-                                        Click <strong>Start Listening</strong> and speak in Hindi or English (mixed Hinglish supported). The offline AI scanner will transcribe your voice and check threat metrics in real-time.
+                                        Click <strong>Start Monitoring</strong> and speak in Hindi or English (mixed Hinglish supported). The offline AI scanner will transcribe your voice and check threat metrics in real-time.
                                     </p>
-                                    
+
+                                    {isCallTerminated && (
+                                        <div class="p-4 bg-red-950/80 border border-red-500 text-red-400 rounded-xl flex items-center gap-3 animate-pulse">
+                                            <span class="text-2xl">🚨</span>
+                                            <div>
+                                                <h3 class="text-sm font-extrabold uppercase tracking-wider">CALL TERMINATED AUTOMATICALLY</h3>
+                                                <p class="text-xs text-red-400/80 mt-1">Scam threat reached 100%. System automatically hung up to protect the user.</p>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div class="flex items-center gap-4 mt-2">
                                         <button onClick={toggleMic} class={`flex-1 py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-3 transition-all ${isListening ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse' : 'bg-blue-500 hover:bg-blue-600 text-slate-950'}`}>
                                             <span>{isListening ? '⏹️ Stop Monitoring' : '🎙️ Start Monitoring'}</span>
@@ -420,16 +518,35 @@
                                         <span class="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30 text-xs font-bold">New: AI Voice Detection Included</span>
                                     </div>
                                     <p class="text-sm text-slate-400">Upload recorded call files (.wav, .mp3, .m4a) to decode audio features, verify speech patterns, and classify human vs AI voices.</p>
-                                    
-                                    <form onSubmit={handleAnalyzeAudio} class="flex flex-col gap-4">
-                                        <div class="border-2 border-dashed border-slate-700 hover:border-slate-500 rounded-xl p-8 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all bg-slate-950/40">
+
+                                    <form onSubmit={(e) => handleAnalyzeAudio(e, null)} class="flex flex-col gap-4">
+                                        <div
+                                            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-emerald-500'); }}
+                                            onDragLeave={(e) => { e.preventDefault(); e.currentTarget.classList.remove('border-emerald-500'); }}
+                                            onDrop={(e) => {
+                                                e.preventDefault();
+                                                e.currentTarget.classList.remove('border-emerald-500');
+                                                const file = e.dataTransfer.files[0];
+                                                if (file) {
+                                                    setAudioFile(file);
+                                                    handleAnalyzeAudio(null, file);
+                                                }
+                                            }}
+                                            class="border-2 border-dashed border-slate-700 hover:border-slate-500 rounded-xl p-8 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all bg-slate-950/40"
+                                        >
                                             <span class="text-4xl mb-2">📥</span>
-                                            <input type="file" accept="audio/*" onChange={(e) => setAudioFile(e.target.files[0])} class="text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700" />
-                                            <span class="text-xs text-slate-500">Supports WAV, MP3, M4A, OGG</span>
+                                            <input type="file" accept="audio/*" onChange={(e) => {
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    setAudioFile(file);
+                                                    handleAnalyzeAudio(null, file);
+                                                }
+                                            }} class="text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700" />
+                                            <span class="text-xs text-slate-500">Supports WAV, MP3, M4A, OGG (Drag & Drop or Select File)</span>
                                         </div>
 
                                         <button type="submit" disabled={!audioFile || loading} class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-xl transition-all disabled:opacity-50">
-                                            {loading ? 'Processing Audio Pipeline...' : 'Run Integrated Scan (Scam + AI Voice)'}
+                                            {loading ? 'Processing Audio Pipeline...' : 'Select or drop a file to automatically detect voice integrity'}
                                         </button>
                                     </form>
                                 </div>
@@ -440,7 +557,7 @@
                                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4">
                                     <h2 class="text-lg font-bold">📝 Pasted Transcript Evaluation</h2>
                                     <p class="text-sm text-slate-400">Select one of our pre-compiled scam templates or write/paste a custom transcript.</p>
-                                    
+
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
                                         {DEMO_TRANSCRIPTS.map((demo, idx) => (
                                             <button key={idx} onClick={() => { setPastedText(demo.text); handleAnalyzeText(demo.text); }} class="text-left px-3 py-2 bg-slate-950/40 border border-slate-800 rounded-lg hover:bg-slate-800 text-xs font-medium transition-all text-slate-300">
@@ -551,7 +668,7 @@
                                                 <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden">
                                                     <div class="bg-red-500 h-full" style={{ width: `${(stats.fraud_calls / (stats.total_calls || 1)) * 100}%` }}></div>
                                                 </div>
-                                                
+
                                                 <div class="flex justify-between mt-2">
                                                     <span>KYC & Banking Scams</span>
                                                     <span class="font-bold text-amber-400">{Math.round((stats.suspicious_calls / (stats.total_calls || 1)) * 100)}%</span>
@@ -577,16 +694,16 @@
 
                         {/* RIGHT: Output Gauge & Decision Column */}
                         <div class="lg:col-span-5 flex flex-col gap-6">
-                            
+
                             {/* Threat Evaluation Report */}
                             {((activeTab === 'live' && isListening) || (activeTab !== 'live' && analysisResult)) ? (
                                 <div class="flex flex-col gap-6">
-                                    
+
                                     {/* Combined Threat Summary (for Audio Uploads) */}
                                     {isAudioAnalysis && (
                                         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4 items-center">
                                             <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider self-start">🛡️ Combined threat assessment</h2>
-                                            
+
                                             <div class="grid grid-cols-3 gap-2 w-full mt-2">
                                                 {/* Mini Scam Score */}
                                                 <div class="bg-slate-950/70 p-3 border border-slate-800 rounded-xl flex flex-col items-center justify-center">
@@ -608,13 +725,13 @@
                                             <div class="relative flex items-center justify-center mt-3">
                                                 <svg class="w-36 h-36 transform -rotate-90">
                                                     <circle cx="72" cy="72" r="60" stroke="#1e293b" stroke-width="10" fill="transparent" />
-                                                    <circle cx="72" cy="72" r="60" 
-                                                        stroke={combinedScore >= 61 ? '#ef4444' : combinedScore >= 31 ? '#f59e0b' : '#10b981'} 
-                                                        stroke-width="10" 
-                                                        fill="transparent" 
-                                                        stroke-dasharray="377" 
+                                                    <circle cx="72" cy="72" r="60"
+                                                        stroke={combinedScore >= 70 ? '#ef4444' : combinedScore >= 31 ? '#f59e0b' : '#10b981'}
+                                                        stroke-width="10"
+                                                        fill="transparent"
+                                                        stroke-dasharray="377"
                                                         stroke-dashoffset={377 - (377 * combinedScore) / 100}
-                                                        class="transition-all duration-700 ease-out" 
+                                                        class="transition-all duration-700 ease-out"
                                                     />
                                                 </svg>
                                                 <div class="absolute flex flex-col items-center justify-center">
@@ -625,12 +742,18 @@
 
                                             <div class={`w-full p-3.5 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${getRiskColorClass(combinedScore)}`}>
                                                 <span class="text-2xl mb-1">
-                                                    {combinedScore >= 61 ? '🚨' : combinedScore >= 31 ? '⚠️' : '✅'}
+                                                    {combinedScore >= 70 ? '🚨' : combinedScore >= 31 ? '⚠️' : '✅'}
                                                 </span>
                                                 <h3 class="text-sm font-extrabold uppercase tracking-wide">
                                                     Combined {combinedRiskLevel} Risk Detected
-                                                </h3>
+                                                 </h3>
                                             </div>
+
+                                            {isAlarmPlaying && (
+                                                <button onClick={stopHighRiskAlarm} class="w-full mt-3 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl animate-pulse flex items-center justify-center gap-2 border border-rose-400/50 shadow-lg shadow-rose-900/30">
+                                                    <span>🔊 Stop Alarm (30s Warning Active)</span>
+                                                </button>
+                                            )}
                                         </div>
                                     )}
 
@@ -638,7 +761,7 @@
                                     {isAudioAnalysis && (
                                         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4">
                                             <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">🔊 AI Voice Integrity Check</h2>
-                                            
+
                                             <div class="flex justify-between items-center bg-slate-950 p-3 border border-slate-900 rounded-xl">
                                                 <div>
                                                     <div class="text-[10px] text-slate-500 uppercase tracking-wide">Classification</div>
@@ -697,21 +820,21 @@
                                     {(!isAudioAnalysis) && (
                                         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-6 items-center">
                                             <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider self-start">🎯 Scam threat evaluation</h2>
-                                            
+
                                             {/* Circular Gauge */}
                                             <div class="relative flex items-center justify-center">
                                                 <svg class="w-48 h-48 transform -rotate-90">
                                                     <circle cx="96" cy="96" r="80" stroke="#1e293b" stroke-width="12" fill="transparent" />
-                                                    <circle cx="96" cy="96" r="80" 
+                                                    <circle cx="96" cy="96" r="80"
                                                         stroke={
-                                                            (activeTab === 'live' ? micRiskScore : scamScore) >= 61 ? '#ef4444' : 
-                                                            (activeTab === 'live' ? micRiskScore : scamScore) >= 31 ? '#f59e0b' : '#10b981'
-                                                        } 
-                                                        stroke-width="12" 
-                                                        fill="transparent" 
-                                                        stroke-dasharray="502" 
+                                                            (activeTab === 'live' ? micRiskScore : scamScore) >= 70 ? '#ef4444' :
+                                                                (activeTab === 'live' ? micRiskScore : scamScore) >= 31 ? '#f59e0b' : '#10b981'
+                                                        }
+                                                        stroke-width="12"
+                                                        fill="transparent"
+                                                        stroke-dasharray="502"
                                                         stroke-dashoffset={502 - (502 * (activeTab === 'live' ? micRiskScore : scamScore || 0)) / 100}
-                                                        class="transition-all duration-700 ease-out" 
+                                                        class="transition-all duration-700 ease-out"
                                                     />
                                                 </svg>
                                                 <div class="absolute flex flex-col items-center justify-center">
@@ -723,18 +846,24 @@
                                             </div>
 
                                             {/* Action Alert Status Block */}
-                                            <div class={`w-full p-4 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${getRiskColorClass(activeTab === 'live' ? micRiskScore : scamScore)}`}>
-                                                <span class="text-3xl mb-1">
-                                                    {(activeTab === 'live' ? micRiskScore : scamScore) >= 61 ? '🚨' : 
-                                                     (activeTab === 'live' ? micRiskScore : scamScore) >= 31 ? '⚠️' : '✅'}
+                                            <div class={`w-full p-4 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${isCallTerminated ? 'bg-red-950/80 border-red-500 text-red-400 shadow-lg shadow-red-900/30' : getRiskColorClass(activeTab === 'live' ? micRiskScore : scamScore)}`}>
+                                                <span class="text-3xl mb-1 font-bold">
+                                                    {isCallTerminated ? '📴' : (activeTab === 'live' ? micRiskScore : scamScore) >= 70 ? '🚨' :
+                                                        (activeTab === 'live' ? micRiskScore : scamScore) >= 31 ? '⚠️' : '✅'}
                                                 </span>
                                                 <h3 class="text-md font-extrabold uppercase tracking-wide">
-                                                    {activeTab === 'live' ? micRiskLevel : scamRiskLevel} Risk Detected
+                                                    {isCallTerminated ? 'AUTOMATICALLY HUNG UP' : `${activeTab === 'live' ? micRiskLevel : scamRiskLevel} Risk Detected`}
                                                 </h3>
                                                 <p class="text-xs opacity-90 mt-1 max-w-xs leading-relaxed">
-                                                    Category: <strong class="underline">{activeTab === 'live' ? micCategory : scamCategory}</strong>
+                                                    {isCallTerminated ? 'Call terminated at 100% risk score' : `Category: ${activeTab === 'live' ? micCategory : scamCategory}`}
                                                 </p>
                                             </div>
+
+                                            {isAlarmPlaying && (
+                                                <button onClick={stopHighRiskAlarm} class="w-full mt-1 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl animate-pulse flex items-center justify-center gap-2 border border-rose-400/50 shadow-lg shadow-rose-900/30">
+                                                    <span>🔊 Stop Alarm (30s Warning Active)</span>
+                                                </button>
+                                            )}
 
                                             {/* Keywords Panel */}
                                             <div class="w-full flex flex-col gap-2">
@@ -754,8 +883,8 @@
                                             <div class="w-full bg-slate-950 p-4 border border-slate-900 rounded-xl">
                                                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Evidence Report</span>
                                                 <p class="text-xs text-slate-400 leading-relaxed font-mono">
-                                                    {activeTab === 'live' 
-                                                        ? (micRiskScore >= 31 ? `Live conversation matches profile signature of ${micCategory}. Risk evaluation triggered at ${micRiskScore}%.` : 'No prominent threat indicators detected in stream.') 
+                                                    {activeTab === 'live'
+                                                        ? (micRiskScore >= 31 ? `Live conversation matches profile signature of ${micCategory}. Risk evaluation triggered at ${micRiskScore}%.` : 'No prominent threat indicators detected in stream.')
                                                         : scamEvidence}
                                                 </p>
                                             </div>
@@ -766,7 +895,7 @@
                                     {isAudioAnalysis && (
                                         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4">
                                             <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">📝 Scam Detection Report</h2>
-                                            
+
                                             <div class="flex justify-between items-center bg-slate-950 p-3 border border-slate-900 rounded-xl">
                                                 <div>
                                                     <div class="text-[10px] text-slate-500">Category</div>
@@ -852,7 +981,7 @@
                                 {selectedCall.voiceClassification ? (
                                     <div class="bg-slate-900/60 p-4 border border-slate-800 rounded-xl flex flex-col gap-3">
                                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">AI Voice Classification Report</h3>
-                                        
+
                                         <div class="flex justify-between items-center bg-slate-950 p-2.5 border border-slate-900 rounded-lg">
                                             <div>
                                                 <div class="text-[10px] text-slate-500 uppercase">Classification</div>
@@ -903,4 +1032,5 @@
         root.render(<App />);
     </script>
 </body>
+
 </html>

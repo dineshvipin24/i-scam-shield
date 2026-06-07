@@ -76,8 +76,14 @@ class FraudDetector:
         matched_keywords = [k for k in self.keywords if k in lowered]
         matched_patterns = [p for p in self.patterns if p in lowered]
 
-        # 1. Classification & Probability
-        if self.sklearn_available and self.classifier is not None:
+        # Developer/QA test backdoor for verifying 100% threat alarm beeps and UI flash
+        if "test_alarm_siren" in lowered or "trigger 100% threat level" in lowered:
+            matched_keywords = ["otp", "blocked", "alarm_test"]
+            matched_patterns = ["trigger 100% threat level"]
+            prob = 1.0
+            predicted_cat = "Emergency Threat Level Test"
+            confidence = 1.0
+        elif self.sklearn_available and self.classifier is not None:
             X_vec = self.vectorizer.transform([text])
             prob = float(self.classifier.predict_proba(X_vec)[0][1])
             predicted_cat = str(self.categories_model.predict(X_vec)[0])
@@ -101,7 +107,7 @@ class FraudDetector:
         # 2. Score conversion
         risk_score = int(prob * 100)
         
-        if risk_score >= 61:
+        if risk_score >= 70:
             risk_level = "HIGH"
         elif risk_score >= 31:
             risk_level = "MEDIUM"

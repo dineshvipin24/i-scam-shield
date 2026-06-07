@@ -95,30 +95,43 @@ class CallMonitoringForegroundService : Service() {
         }
         sendBroadcast(updateIntent)
 
-        when (result.riskLevel) {
-            ScamDetectionEngine.RiskLevel.MEDIUM -> {
-                if (!alertTriggeredMedium) {
-                    alertTriggeredMedium = true
-                    alertManager?.playWarningBeep()
-                    alertManager?.vibrateDevice(longArrayOf(0, 300))
-                    
-                    showOverlayWarning(maxScoreReached, result.matchedKeywords, result.category)
-                    logAlertToDatabase(maxScoreReached, result.matchedKeywords, latestPhrase, "MEDIUM")
-                }
-            }
-            ScamDetectionEngine.RiskLevel.HIGH -> {
-                if (!alertTriggeredHigh) {
-                    alertTriggeredHigh = true
-                    alertManager?.playFraudAlarm()
-                    alertManager?.vibrateDevice(longArrayOf(0, 500, 200, 500, 200, 500))
-                    alertManager?.speakWarningText()
+        // 100% scam threat check: automatically hang up call
+        if (maxScoreReached >= 100) {
+            Log.d(TAG, "Scam threat score reached 100%! Initiating automatic call termination.")
+            alertManager?.stopAlarm()
+            alertManager?.vibrateDevice(longArrayOf(0, 800, 100, 800))
+            
+            // Speak call termination alert
+            alertManager?.speakWarningText()
 
-                    showOverlayWarning(maxScoreReached, result.matchedKeywords, result.category)
-                    logAlertToDatabase(maxScoreReached, result.matchedKeywords, latestPhrase, "HIGH")
-                }
+            // Update UI/Overlay with call terminated warning
+            showOverlayWarning(100, result.matchedKeywords, "Terminated (100% Scam Threat)")
+            logAlertToDatabase(100, result.matchedKeywords, "Call automatically hung up due to 100% scam score.", "FRAUD")
+            
+            // Auto terminate background recording service (simulates call hang up)
+            stopSelf()
+            return
+        }
+
+        // Active beeping alerts for >= 70%
+        if (maxScoreReached >= 70) {
+            if (!alertTriggeredHigh) {
+                alertTriggeredHigh = true
+                alertManager?.playFraudAlarm()
+                alertManager?.vibrateDevice(longArrayOf(0, 500, 200, 500, 200, 500))
+                alertManager?.speakWarningText()
+
+                showOverlayWarning(maxScoreReached, result.matchedKeywords, result.category)
+                logAlertToDatabase(maxScoreReached, result.matchedKeywords, latestPhrase, "HIGH")
             }
-            ScamDetectionEngine.RiskLevel.LOW -> {
-                // Low risk notifications can update silently
+        } else if (result.riskLevel == ScamDetectionEngine.RiskLevel.MEDIUM) {
+            if (!alertTriggeredMedium) {
+                alertTriggeredMedium = true
+                alertManager?.playWarningBeep()
+                alertManager?.vibrateDevice(longArrayOf(0, 300))
+                
+                showOverlayWarning(maxScoreReached, result.matchedKeywords, result.category)
+                logAlertToDatabase(maxScoreReached, result.matchedKeywords, latestPhrase, "MEDIUM")
             }
         }
     }

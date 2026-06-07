@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,37 +24,47 @@
         }
     </script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         body {
             font-family: 'Outfit', sans-serif;
             background-color: #060913;
         }
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
+
         ::-webkit-scrollbar-track {
             background: #090d16;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #1e293b;
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: #334155;
+        }
+
+        .glass-card {
+            background: rgba(17, 23, 38, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 41, 59, 0.7);
         }
     </style>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- React & ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <!-- Babel for JSX compilation -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
+
 <body class="text-slate-100 min-height-screen">
 
     <div id="root"></div>
@@ -97,7 +108,8 @@
             const [audioFile, setAudioFile] = useState(null);
             const [analysisResult, setAnalysisResult] = useState(null);
             const [loading, setLoading] = useState(false);
-            
+            const [selectedCall, setSelectedCall] = useState(null);
+
             // Microphone States
             const [isListening, setIsListening] = useState(false);
             const [micTranscript, setMicTranscript] = useState([]);
@@ -108,6 +120,12 @@
             const [alertShown, setAlertShown] = useState(false);
             const recognitionRef = useRef(null);
 
+            // High Risk Siren Alarm System
+            const alarmTimerRef = useRef(null);
+            const alarmStopTimeoutRef = useRef(null);
+            const [isAlarmPlaying, setIsAlarmPlaying] = useState(false);
+            const [isCallTerminated, setIsCallTerminated] = useState(false);
+
             // History & Stats
             const [history, setHistory] = useState([]);
             const [stats, setStats] = useState({ total_calls: 0, blocked_calls: 0, safe_calls: 0, suspicious_calls: 0, fraud_calls: 0 });
@@ -115,7 +133,6 @@
             useEffect(() => {
                 fetchHistory();
                 fetchStats();
-                // Initialize Lucide icons after mount
                 if (window.lucide) window.lucide.createIcons();
             }, [activeTab]);
 
@@ -133,8 +150,77 @@
                     .catch(e => console.error("Error fetching stats", e));
             };
 
+            // Audio Context initialization helper (must be called from a user gesture)
+            const initAudioContext = () => {
+                if (!window.sharedAudioContext) {
+                    window.sharedAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (window.sharedAudioContext.state === 'suspended') {
+                    window.sharedAudioContext.resume();
+                }
+            };
+
+            const playBeep = (freq, duration, count = 1, interval = 150) => {
+                try {
+                    initAudioContext();
+                    const audioCtx = window.sharedAudioContext;
+                    let currentCount = 0;
+
+                    const triggerSingleBeep = () => {
+                        if (currentCount >= count) return;
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + duration);
+                        currentCount++;
+                        setTimeout(triggerSingleBeep, interval);
+                    };
+
+                    triggerSingleBeep();
+                } catch (e) {
+                    console.error("Audio error", e);
+                }
+            };
+
+            const triggerHighRiskAlarm = () => {
+                initAudioContext();
+                if (alarmTimerRef.current) return; // already running
+                setIsAlarmPlaying(true);
+                console.log("[ALARM] Triggering high risk alarm. Will continue for 30s.");
+
+                const playBeepLocal = () => {
+                    playBeep(950, 0.25, 2, 120);
+                };
+
+                playBeepLocal();
+                alarmTimerRef.current = setInterval(playBeepLocal, 1500);
+
+                alarmStopTimeoutRef.current = setTimeout(() => {
+                    stopHighRiskAlarm();
+                }, 30000);
+            };
+
+            const stopHighRiskAlarm = () => {
+                setIsAlarmPlaying(false);
+                if (alarmTimerRef.current) {
+                    clearInterval(alarmTimerRef.current);
+                    alarmTimerRef.current = null;
+                }
+                if (alarmStopTimeoutRef.current) {
+                    clearTimeout(alarmStopTimeoutRef.current);
+                    alarmStopTimeoutRef.current = null;
+                }
+                console.log("[ALARM] Alarm stopped.");
+            };
+
             // Analyze Pasted Text
             const handleAnalyzeText = (textToAnalyze) => {
+                initAudioContext();
                 const text = textToAnalyze || pastedText;
                 if (!text.trim()) return;
                 setLoading(true);
@@ -143,42 +229,68 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text })
                 })
-                .then(res => res.json())
-                .then(data => {
-                    setAnalysisResult(data);
-                    setLoading(false);
-                })
-                .catch(e => {
-                    console.error(e);
-                    setLoading(false);
-                });
+                    .then(res => res.json())
+                    .then(data => {
+                        setAnalysisResult(data);
+                        setLoading(false);
+                        if (data.risk_score >= 100) {
+                            stopHighRiskAlarm();
+                            setIsCallTerminated(true);
+                            playBeep(400, 0.5, 3, 200);
+                        } else if (data.risk_score >= 70) {
+                            setIsCallTerminated(false);
+                            triggerHighRiskAlarm();
+                        } else {
+                            setIsCallTerminated(false);
+                        }
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        setLoading(false);
+                    });
             };
 
-            // Analyze Audio File
-            const handleAnalyzeAudio = (e) => {
-                e.preventDefault();
-                if (!audioFile) return;
+            // Analyze Audio File (Complete Scam + AI Voice Analysis)
+            const handleAnalyzeAudio = (e, fileToAnalyze) => {
+                if (e) e.preventDefault();
+                initAudioContext();
+                const file = fileToAnalyze || audioFile;
+                if (!file) return;
                 setLoading(true);
                 const formData = new FormData();
-                formData.append('file', audioFile);
+                formData.append('file', file);
 
-                fetch('/api/analyze-audio', {
+                fetch('/api/analyze-complete', {
                     method: 'POST',
                     body: formData
                 })
-                .then(res => res.json())
-                .then(data => {
-                    setAnalysisResult(data);
-                    setLoading(false);
-                })
-                .catch(e => {
-                    console.error(e);
-                    setLoading(false);
-                });
+                    .then(res => res.json())
+                    .then(data => {
+                        setAnalysisResult(data);
+                        setLoading(false);
+                        const isAudio = !!data?.combined_analysis;
+                        const scam = isAudio ? data.scam_analysis.risk_score : (data?.risk_score || 0);
+                        const comb = isAudio ? data.combined_analysis.combined_threat_score : scam;
+                        if (comb >= 100) {
+                            stopHighRiskAlarm();
+                            setIsCallTerminated(true);
+                            playBeep(400, 0.5, 3, 200);
+                        } else if (comb >= 70) {
+                            setIsCallTerminated(false);
+                            triggerHighRiskAlarm();
+                        } else {
+                            setIsCallTerminated(false);
+                        }
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        setLoading(false);
+                    });
             };
 
             // Live Mic Logic
             const toggleMic = () => {
+                initAudioContext();
                 if (isListening) {
                     stopListening();
                 } else {
@@ -206,6 +318,7 @@
                     setMicRiskLevel('SAFE');
                     setMicCategory('Safe Call');
                     setAlertShown(false);
+                    setIsCallTerminated(false);
                 };
 
                 rec.onresult = (event) => {
@@ -220,28 +333,28 @@
                     setMicTranscript(prev => {
                         const updated = [...prev, finalResult];
                         const rollingText = updated.join(" ");
-                        
-                        // Local quick scoring simulation
+
                         fetch('/api/analyze-text', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ text: rollingText })
                         })
-                        .then(res => res.json())
-                        .then(data => {
-                            setMicRiskScore(data.risk_score);
-                            setMicRiskLevel(data.risk_level);
-                            setMicCategory(data.fraud_category);
-                            setMicKeywords(data.detected_keywords || []);
-                            
-                            // Immediately alert on risk level threshold cross
-                            if (data.risk_level === 'HIGH' && !alertShown) {
-                                setAlertShown(true);
-                                playBeep(1000, 0.15, 3, 100); // 3 rapid high alert beeps
-                            } else if (data.risk_level === 'MEDIUM' && !alertShown) {
-                                playBeep(700, 0.2, 2, 200); // 2 warning beeps
-                            }
-                        });
+                            .then(res => res.json())
+                            .then(data => {
+                                setMicRiskScore(data.risk_score);
+                                setMicRiskLevel(data.risk_level);
+                                setMicCategory(data.fraud_category);
+                                setMicKeywords(data.detected_keywords || []);
+
+                                if (data.risk_score >= 100) {
+                                    stopListening();
+                                    stopHighRiskAlarm();
+                                    setIsCallTerminated(true);
+                                    playBeep(400, 0.5, 3, 200);
+                                } else if (data.risk_score >= 70 || data.risk_level === 'HIGH') {
+                                    triggerHighRiskAlarm();
+                                }
+                            });
                         return updated;
                     });
                 };
@@ -266,58 +379,60 @@
                 }
             };
 
-            const playBeep = (freq, duration, count = 1, interval = 150) => {
-                try {
-                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    let currentCount = 0;
-                    
-                    const triggerSingleBeep = () => {
-                        if (currentCount >= count) return;
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-                        osc.start();
-                        osc.stop(audioCtx.currentTime + duration);
-                        currentCount++;
-                        setTimeout(triggerSingleBeep, interval);
-                    };
-                    
-                    triggerSingleBeep();
-                } catch (e) {
-                    console.error("Audio error", e);
-                }
-            };
-
-            // Periodic geiger warning beep during active risk calls
+            // Non-critical medium risk background chime logic
             useEffect(() => {
                 let intervalId = null;
-                if (isListening && (micRiskLevel === 'HIGH' || micRiskLevel === 'MEDIUM')) {
-                    const freq = micRiskLevel === 'HIGH' ? 950 : 650;
-                    const count = micRiskLevel === 'HIGH' ? 2 : 1;
+                const score = activeTab === 'live' ? micRiskScore : 0;
+                const isMedium = score >= 31 && score < 70;
+
+                if (isListening && isMedium) {
                     intervalId = setInterval(() => {
-                        playBeep(freq, 0.12, count, 100);
-                    }, 2500); // Repeat alert every 2.5 seconds
+                        playBeep(700, 0.15, 1, 100);
+                    }, 3000);
                 }
                 return () => {
                     if (intervalId) clearInterval(intervalId);
                 };
-            }, [isListening, micRiskLevel]);
+            }, [isListening, micRiskScore, activeTab]);
+
+            // Normalized Analysis Mapping
+            const isAudioAnalysis = !!analysisResult?.combined_analysis;
+
+            const scamScore = isAudioAnalysis ? analysisResult.scam_analysis.risk_score : (analysisResult?.risk_score || 0);
+            const scamRiskLevel = isAudioAnalysis ? analysisResult.scam_analysis.risk_level : (analysisResult?.risk_level || 'SAFE');
+            const scamCategory = isAudioAnalysis ? analysisResult.scam_analysis.fraud_category : (analysisResult?.fraud_category || 'Safe Call');
+            const scamEvidence = isAudioAnalysis ? analysisResult.scam_analysis.evidence_report : (analysisResult?.evidence_report || '');
+            const scamKeywords = isAudioAnalysis ? analysisResult.scam_analysis.detected_keywords : (analysisResult?.detected_keywords || []);
+            const scamTranscript = isAudioAnalysis ? analysisResult.scam_analysis.transcript : (analysisResult?.transcript || '');
+
+            const voiceScore = isAudioAnalysis ? analysisResult.voice_analysis.ai_voice_score : 0;
+            const voiceClass = isAudioAnalysis ? analysisResult.voice_analysis.voice_classification : 'Uncertain';
+            const voiceConfidence = isAudioAnalysis ? analysisResult.voice_analysis.confidence_score : 0;
+            const voiceHumanProb = isAudioAnalysis ? analysisResult.voice_analysis.human_voice_probability : 100;
+            const voiceAIProb = isAudioAnalysis ? analysisResult.voice_analysis.ai_voice_probability : 0;
+            const voiceFeatures = isAudioAnalysis ? analysisResult.voice_analysis.features : null;
+            const voiceReasoning = isAudioAnalysis ? analysisResult.voice_analysis.reasoning : '';
+
+            const combinedScore = isAudioAnalysis ? analysisResult.combined_analysis.combined_threat_score : scamScore;
+            const combinedRiskLevel = isAudioAnalysis ? analysisResult.combined_analysis.combined_risk_level : scamRiskLevel;
 
             // Color Class helpers
             const getRiskColorClass = (score) => {
-                if (score >= 61) return 'text-rose-400 border-rose-500/20 bg-rose-500/5 shadow-rose-500/10';
+                if (score >= 70) return 'text-rose-400 border-rose-500/20 bg-rose-500/5 shadow-rose-500/10';
                 if (score >= 31) return 'text-amber-400 border-amber-500/20 bg-amber-500/5 shadow-amber-500/10';
                 return 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5 shadow-emerald-500/10';
             };
 
             const getRiskBadge = (level) => {
-                if (level === 'HIGH') return 'bg-red-500/20 text-red-400 border border-red-500/40';
-                if (level === 'MEDIUM') return 'bg-amber-500/20 text-amber-400 border border-amber-500/40';
+                if (level === 'HIGH' || level === 'FRAUD') return 'bg-red-500/20 text-red-400 border border-red-500/40';
+                if (level === 'MEDIUM' || level === 'SUSPICIOUS') return 'bg-amber-500/20 text-amber-400 border border-amber-500/40';
                 return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40';
+            };
+
+            const getVoiceBadge = (vClass) => {
+                if (vClass.includes('AI')) return 'bg-red-500/20 text-red-400 border border-red-500/40';
+                if (vClass.includes('Human')) return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40';
+                return 'bg-amber-500/20 text-amber-400 border border-amber-500/40';
             };
 
             return (
@@ -328,44 +443,54 @@
                             <span class="text-3xl">🛡️</span>
                             <div>
                                 <h1 class="text-xl font-bold tracking-tight text-white">CAMP PROTECT</h1>
-                                <p class="text-xs text-slate-400">AI Real-time Scam Detector Web Platform</p>
+                                <p class="text-xs text-slate-400">AI Scam Shield & Voice Integrity Platform</p>
                             </div>
                         </div>
                         <div class="flex gap-2 text-xs">
-                            <span class="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">Database: SQLite (Demo Mode)</span>
+                            <span class="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">Database: SQLite (Active)</span>
                             <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full">Server Status: Online</span>
                         </div>
                     </header>
 
                     {/* Navigation Tabs */}
-                    <div class="flex justify-center bg-slate-950 border-b border-slate-900 px-6 py-3 gap-4">
-                        <button onClick={() => { setActiveTab('live'); setAnalysisResult(null); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'live' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>🎙️ Live Mic Monitor</button>
-                        <button onClick={() => { setActiveTab('audio'); setAnalysisResult(null); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'audio' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📁 Upload Audio File</button>
-                        <button onClick={() => { setActiveTab('transcript'); setAnalysisResult(null); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'transcript' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📝 Paste Transcript</button>
-                        <button onClick={() => { setActiveTab('history'); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'history' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📊 Call Logs & History</button>
-                        <button onClick={() => { setActiveTab('analytics'); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'analytics' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📈 System Analytics</button>
+                    <div class="flex flex-wrap justify-center bg-slate-950 border-b border-slate-900 px-6 py-3 gap-2 md:gap-4">
+                        <button onClick={() => { setActiveTab('live'); setAnalysisResult(null); stopHighRiskAlarm(); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'live' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>🎙️ Live Mic Monitor</button>
+                        <button onClick={() => { setActiveTab('audio'); setAnalysisResult(null); stopHighRiskAlarm(); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'audio' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📁 Upload Audio File</button>
+                        <button onClick={() => { setActiveTab('transcript'); setAnalysisResult(null); stopHighRiskAlarm(); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'transcript' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📝 Paste Transcript</button>
+                        <button onClick={() => { setActiveTab('history'); stopHighRiskAlarm(); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'history' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📊 Call Logs & History</button>
+                        <button onClick={() => { setActiveTab('analytics'); stopHighRiskAlarm(); }} class={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'analytics' ? 'bg-slate-800 text-white shadow-lg border border-slate-700' : 'text-slate-400 hover:text-slate-200'}`}>📈 System Analytics</button>
                     </div>
 
                     {/* Main Layout Grid */}
                     <main class="flex-1 max-w-7xl w-full mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        
+
                         {/* LEFT: Input Column */}
                         <div class="lg:col-span-7 flex flex-col gap-6">
-                            
+
                             {/* Tab 1: Live Mic Monitor */}
                             {activeTab === 'live' && (
                                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4">
                                     <h2 class="text-lg font-bold">🎙️ Continuous Offline Speech Monitoring</h2>
                                     <p class="text-sm text-slate-400">
-                                        Click <strong>Start Listening</strong> and speak in Hindi or English (mixed Hinglish supported). The offline AI scanner will transcribe your voice and check threat metrics in real-time.
+                                        Click <strong>Start Monitoring</strong> and speak in Hindi or English (mixed Hinglish supported). The offline AI scanner will transcribe your voice and check threat metrics in real-time.
                                     </p>
-                                    
+
+                                    {isCallTerminated && (
+                                        <div class="p-4 bg-red-950/80 border border-red-500 text-red-400 rounded-xl flex items-center gap-3 animate-pulse">
+                                            <span class="text-2xl">🚨</span>
+                                            <div>
+                                                <h3 class="text-sm font-extrabold uppercase tracking-wider">CALL TERMINATED AUTOMATICALLY</h3>
+                                                <p class="text-xs text-red-400/80 mt-1">Scam threat reached 100%. System automatically hung up to protect the user.</p>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div class="flex items-center gap-4 mt-2">
                                         <button onClick={toggleMic} class={`flex-1 py-4 px-6 rounded-xl font-bold flex items-center justify-center gap-3 transition-all ${isListening ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse' : 'bg-blue-500 hover:bg-blue-600 text-slate-950'}`}>
-                                            <span>{isListening ? '⏹️ Stop Listening' : '🎙️ Start Listening'}</span>
+                                            <span>{isListening ? '⏹️ Stop Monitoring' : '🎙️ Start Monitoring'}</span>
                                         </button>
                                         <span class={`px-3 py-1 rounded-full text-xs font-bold ${isListening ? 'bg-red-500/20 text-red-400' : 'bg-slate-800 text-slate-400'}`}>
-                                            {isListening ? '● LISTENING' : '● IDLE'}
+                                            {isListening ? '● SCANNING' : '● IDLE'}
                                         </span>
                                     </div>
 
@@ -388,18 +513,40 @@
                             {/* Tab 2: Upload Audio File */}
                             {activeTab === 'audio' && (
                                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4">
-                                    <h2 class="text-lg font-bold">📁 Batch Speech-to-Text Upload</h2>
-                                    <p class="text-sm text-slate-400">Upload recorded call files (.wav, .mp3, .m4a) to convert speech to text and run threat analytics.</p>
-                                    
-                                    <form onSubmit={handleAnalyzeAudio} class="flex flex-col gap-4">
-                                        <div class="border-2 border-dashed border-slate-700 hover:border-slate-500 rounded-xl p-8 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all bg-slate-950/40">
+                                    <div class="flex items-center justify-between">
+                                        <h2 class="text-lg font-bold">📁 Batch Speech-to-Text & Voice Analysis</h2>
+                                        <span class="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30 text-xs font-bold">New: AI Voice Detection Included</span>
+                                    </div>
+                                    <p class="text-sm text-slate-400">Upload recorded call files (.wav, .mp3, .m4a) to decode audio features, verify speech patterns, and classify human vs AI voices.</p>
+
+                                    <form onSubmit={(e) => handleAnalyzeAudio(e, null)} class="flex flex-col gap-4">
+                                        <div
+                                            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-emerald-500'); }}
+                                            onDragLeave={(e) => { e.preventDefault(); e.currentTarget.classList.remove('border-emerald-500'); }}
+                                            onDrop={(e) => {
+                                                e.preventDefault();
+                                                e.currentTarget.classList.remove('border-emerald-500');
+                                                const file = e.dataTransfer.files[0];
+                                                if (file) {
+                                                    setAudioFile(file);
+                                                    handleAnalyzeAudio(null, file);
+                                                }
+                                            }}
+                                            class="border-2 border-dashed border-slate-700 hover:border-slate-500 rounded-xl p-8 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all bg-slate-955/40"
+                                        >
                                             <span class="text-4xl mb-2">📥</span>
-                                            <input type="file" accept="audio/*" onChange={(e) => setAudioFile(e.target.files[0])} class="text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700" />
-                                            <span class="text-xs text-slate-500">Supports WAV, MP3, M4A, OGG</span>
+                                            <input type="file" accept="audio/*" onChange={(e) => {
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    setAudioFile(file);
+                                                    handleAnalyzeAudio(null, file);
+                                                }
+                                            }} class="text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700" />
+                                            <span class="text-xs text-slate-500">Supports WAV, MP3, M4A, OGG (Drag & Drop or Select File)</span>
                                         </div>
 
                                         <button type="submit" disabled={!audioFile || loading} class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-xl transition-all disabled:opacity-50">
-                                            {loading ? 'Analyzing with Whisper STT...' : 'Run Audio Transcription'}
+                                            {loading ? 'Processing Audio Pipeline...' : 'Select or drop a file to automatically detect voice integrity'}
                                         </button>
                                     </form>
                                 </div>
@@ -410,7 +557,7 @@
                                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4">
                                     <h2 class="text-lg font-bold">📝 Pasted Transcript Evaluation</h2>
                                     <p class="text-sm text-slate-400">Select one of our pre-compiled scam templates or write/paste a custom transcript.</p>
-                                    
+
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
                                         {DEMO_TRANSCRIPTS.map((demo, idx) => (
                                             <button key={idx} onClick={() => { setPastedText(demo.text); handleAnalyzeText(demo.text); }} class="text-left px-3 py-2 bg-slate-950/40 border border-slate-800 rounded-lg hover:bg-slate-800 text-xs font-medium transition-all text-slate-300">
@@ -436,10 +583,10 @@
                                             <thead class="bg-slate-950 text-slate-300 font-bold uppercase text-xs tracking-wider border-b border-slate-800">
                                                 <tr>
                                                     <th class="py-3 px-4">Caller ID</th>
-                                                    <th class="py-3 px-4">Channel Type</th>
-                                                    <th class="py-3 px-4">Score</th>
-                                                    <th class="py-3 px-4">Category</th>
+                                                    <th class="py-3 px-4">Threat Score</th>
+                                                    <th class="py-3 px-4">Voice Classification</th>
                                                     <th class="py-3 px-4">Status</th>
+                                                    <th class="py-3 px-4">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="divide-y divide-slate-800/50">
@@ -449,16 +596,31 @@
                                                     </tr>
                                                 ) : (
                                                     history.map((h, idx) => (
-                                                        <tr key={idx} class="hover:bg-slate-800/35">
-                                                            <td class="py-3 px-4 text-slate-200 font-medium">{h.from_number}</td>
-                                                            <td class="py-3 px-4 text-xs font-semibold">{h.to_number}</td>
+                                                        <tr key={idx} class="hover:bg-slate-800/35 transition-all">
+                                                            <td class="py-3 px-4 text-slate-200 font-medium">
+                                                                <div>{h.from_number}</div>
+                                                                <div class="text-[10px] text-slate-500 font-mono mt-0.5">{h.call_sid}</div>
+                                                            </td>
                                                             <td class="py-3 px-4">
                                                                 <span class={`px-2 py-0.5 rounded text-xs font-bold ${getRiskBadge(h.risk_label.toUpperCase())}`}>
                                                                     {Math.round(h.final_score * 100)}%
                                                                 </span>
                                                             </td>
-                                                            <td class="py-3 px-4 text-slate-300">{h.action_taken || 'Processed'}</td>
-                                                            <td class="py-3 px-4 text-xs font-bold">{h.status.toUpperCase()}</td>
+                                                            <td class="py-3 px-4">
+                                                                {h.voiceClassification ? (
+                                                                    <span class={`px-2 py-0.5 rounded text-xs font-bold ${getVoiceBadge(h.voiceClassification)}`}>
+                                                                        {h.voiceClassification}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span class="text-xs text-slate-500">N/A (Text-only)</span>
+                                                                )}
+                                                            </td>
+                                                            <td class="py-3 px-4 text-xs font-bold text-slate-300">{h.status.toUpperCase()}</td>
+                                                            <td class="py-3 px-4">
+                                                                <button onClick={() => setSelectedCall(h)} class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded">
+                                                                    View Details
+                                                                </button>
+                                                            </td>
                                                         </tr>
                                                     ))
                                                 )}
@@ -472,7 +634,7 @@
                             {activeTab === 'analytics' && (
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4">
-                                        <h2 class="text-lg font-bold">🛡️ Security Dashboard Statistics</h2>
+                                        <h2 class="text-lg font-bold">🛡 decline statistics and reports</h2>
                                         <div class="grid grid-cols-2 gap-4 mt-2">
                                             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
                                                 <span class="text-xs text-slate-400 block mb-1">Evaluated Threats</span>
@@ -506,7 +668,7 @@
                                                 <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden">
                                                     <div class="bg-red-500 h-full" style={{ width: `${(stats.fraud_calls / (stats.total_calls || 1)) * 100}%` }}></div>
                                                 </div>
-                                                
+
                                                 <div class="flex justify-between mt-2">
                                                     <span>KYC & Banking Scams</span>
                                                     <span class="font-bold text-amber-400">{Math.round((stats.suspicious_calls / (stats.total_calls || 1)) * 100)}%</span>
@@ -532,73 +694,238 @@
 
                         {/* RIGHT: Output Gauge & Decision Column */}
                         <div class="lg:col-span-5 flex flex-col gap-6">
-                            
-                            {/* Real-time Threat Gauge */}
+
+                            {/* Threat Evaluation Report */}
                             {((activeTab === 'live' && isListening) || (activeTab !== 'live' && analysisResult)) ? (
-                                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-6 items-center">
-                                    <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider self-start">🎯 Real-time threat gauge</h2>
-                                    
-                                    {/* Circular Gauge */}
-                                    <div class="relative flex items-center justify-center">
-                                        <svg class="w-48 h-48 transform -rotate-90">
-                                            <circle cx="96" cy="96" r="80" stroke="#1e293b" stroke-width="12" fill="transparent" />
-                                            <circle cx="96" cy="96" r="80" 
-                                                stroke={
-                                                    (activeTab === 'live' ? micRiskScore : analysisResult?.risk_score) >= 61 ? '#ef4444' : 
-                                                    (activeTab === 'live' ? micRiskScore : analysisResult?.risk_score) >= 31 ? '#f59e0b' : '#10b981'
-                                                } 
-                                                stroke-width="12" 
-                                                fill="transparent" 
-                                                stroke-dasharray="502" 
-                                                stroke-dashoffset={502 - (502 * (activeTab === 'live' ? micRiskScore : analysisResult?.risk_score || 0)) / 100}
-                                                class="transition-all duration-700 ease-out" 
-                                            />
-                                        </svg>
-                                        <div class="absolute flex flex-col items-center justify-center">
-                                            <span class="text-4xl font-extrabold text-white">
-                                                {activeTab === 'live' ? micRiskScore : analysisResult?.risk_score}%
-                                            </span>
-                                            <span class="text-xs text-slate-500 font-semibold uppercase mt-1">Risk Probability</span>
-                                        </div>
-                                    </div>
+                                <div class="flex flex-col gap-6">
 
-                                    {/* Action Alert Status Block */}
-                                    <div class={`w-full p-4 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${getRiskColorClass(activeTab === 'live' ? micRiskScore : analysisResult?.risk_score)}`}>
-                                        <span class="text-3xl mb-1">
-                                            {(activeTab === 'live' ? micRiskScore : analysisResult?.risk_score) >= 61 ? '🚨' : 
-                                             (activeTab === 'live' ? micRiskScore : analysisResult?.risk_score) >= 31 ? '⚠️' : '✅'}
-                                        </span>
-                                        <h3 class="text-md font-extrabold uppercase tracking-wide">
-                                            {activeTab === 'live' ? micRiskLevel : analysisResult?.risk_level} Risk Detected
-                                        </h3>
-                                        <p class="text-xs opacity-90 mt-1 max-w-xs leading-relaxed">
-                                            Category: <strong class="underline">{activeTab === 'live' ? micCategory : analysisResult?.fraud_category}</strong>
-                                        </p>
-                                    </div>
+                                    {/* Combined Threat Summary (for Audio Uploads) */}
+                                    {isAudioAnalysis && (
+                                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4 items-center">
+                                            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider self-start">🛡️ Combined threat assessment</h2>
 
-                                    {/* Keywords Panel */}
-                                    <div class="w-full flex flex-col gap-2">
-                                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Matched Scam Signatures</span>
-                                        <div class="flex flex-wrap gap-1.5 min-h-[36px]">
-                                            {(activeTab === 'live' ? micKeywords : analysisResult?.detected_keywords)?.length > 0 ? (
-                                                (activeTab === 'live' ? micKeywords : analysisResult?.detected_keywords).map((kw, idx) => (
-                                                    <span key={idx} class="px-2.5 py-1 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg text-xs font-semibold">{kw}</span>
-                                                ))
-                                            ) : (
-                                                <span class="text-slate-600 text-xs">No scam signatures matches found.</span>
+                                            <div class="grid grid-cols-3 gap-2 w-full mt-2">
+                                                {/* Mini Scam Score */}
+                                                <div class="bg-slate-950/70 p-3 border border-slate-800 rounded-xl flex flex-col items-center justify-center">
+                                                    <span class="text-xs text-slate-400 block mb-1">Scam Score</span>
+                                                    <span class="text-xl font-bold text-white">{scamScore}%</span>
+                                                </div>
+                                                {/* Mini Voice Score */}
+                                                <div class="bg-slate-950/70 p-3 border border-slate-800 rounded-xl flex flex-col items-center justify-center">
+                                                    <span class="text-xs text-slate-400 block mb-1">Voice Score</span>
+                                                    <span class="text-xl font-bold text-red-400">{voiceScore}%</span>
+                                                </div>
+                                                {/* Combined Score */}
+                                                <div class="bg-slate-950/70 p-3 border border-slate-800 rounded-xl flex flex-col items-center justify-center">
+                                                    <span class="text-xs text-slate-400 block mb-1">Combined</span>
+                                                    <span class="text-xl font-bold text-amber-400">{combinedScore}%</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="relative flex items-center justify-center mt-3">
+                                                <svg class="w-36 h-36 transform -rotate-90">
+                                                    <circle cx="72" cy="72" r="60" stroke="#1e293b" stroke-width="10" fill="transparent" />
+                                                    <circle cx="72" cy="72" r="60"
+                                                        stroke={combinedScore >= 70 ? '#ef4444' : combinedScore >= 31 ? '#f59e0b' : '#10b981'}
+                                                        stroke-width="10"
+                                                        fill="transparent"
+                                                        stroke-dasharray="377"
+                                                        stroke-dashoffset={377 - (377 * combinedScore) / 100}
+                                                        class="transition-all duration-700 ease-out"
+                                                    />
+                                                </svg>
+                                                <div class="absolute flex flex-col items-center justify-center">
+                                                    <span class="text-3xl font-extrabold text-white">{combinedScore}%</span>
+                                                    <span class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">Threat Score</span>
+                                                </div>
+                                            </div>
+
+                                            <div class={`w-full p-3.5 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${getRiskColorClass(combinedScore)}`}>
+                                                <span class="text-2xl mb-1">
+                                                    {combinedScore >= 70 ? '🚨' : combinedScore >= 31 ? '⚠️' : '✅'}
+                                                </span>
+                                                <h3 class="text-sm font-extrabold uppercase tracking-wide">
+                                                    Combined {combinedRiskLevel} Risk Detected
+                                                 </h3>
+                                            </div>
+
+                                            {isAlarmPlaying && (
+                                                <button onClick={stopHighRiskAlarm} class="w-full mt-3 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl animate-pulse flex items-center justify-center gap-2 border border-rose-400/50 shadow-lg shadow-rose-900/30">
+                                                    <span>🔊 Stop Alarm (30s Warning Active)</span>
+                                                </button>
                                             )}
                                         </div>
-                                    </div>
+                                    )}
 
-                                    {/* Evidence report */}
-                                    <div class="w-full bg-slate-950 p-4 border border-slate-900 rounded-xl">
-                                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Evidence Report</span>
-                                        <p class="text-xs text-slate-400 leading-relaxed font-mono">
-                                            {activeTab === 'live' 
-                                                ? (micRiskScore >= 31 ? `Live conversation matches profile signature of ${micCategory}. Risk evaluation triggered at ${micRiskScore}%.` : 'No prominent threat indicators detected in stream.') 
-                                                : analysisResult?.evidence_report}
-                                        </p>
-                                    </div>
+                                    {/* AI Voice Detection Card */}
+                                    {isAudioAnalysis && (
+                                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4">
+                                            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">🔊 AI Voice Integrity Check</h2>
+
+                                            <div class="flex justify-between items-center bg-slate-950 p-3 border border-slate-900 rounded-xl">
+                                                <div>
+                                                    <div class="text-[10px] text-slate-500 uppercase tracking-wide">Classification</div>
+                                                    <div class="text-sm font-bold mt-0.5">{voiceClass}</div>
+                                                </div>
+                                                <span class={`px-2.5 py-1 rounded-lg text-xs font-bold ${getVoiceBadge(voiceClass)}`}>
+                                                    {voiceConfidence}% Conf.
+                                                </span>
+                                            </div>
+
+                                            {/* Human vs AI Probability Slider */}
+                                            <div>
+                                                <div class="flex justify-between text-xs font-bold mb-1.5">
+                                                    <span class="text-emerald-400">Human: {voiceHumanProb}%</span>
+                                                    <span class="text-red-400">AI: {voiceAIProb}%</span>
+                                                </div>
+                                                <div class="w-full bg-slate-950 h-3 rounded-full flex overflow-hidden border border-slate-900">
+                                                    <div class="bg-emerald-500 h-full transition-all duration-700" style={{ width: `${voiceHumanProb}%` }}></div>
+                                                    <div class="bg-red-500 h-full transition-all duration-700" style={{ width: `${voiceAIProb}%` }}></div>
+                                                </div>
+                                            </div>
+
+                                            {/* Feature analysis list */}
+                                            {voiceFeatures && (
+                                                <div class="mt-2">
+                                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Acoustic Feature Breakdown</span>
+                                                    <div class="grid grid-cols-2 gap-3">
+                                                        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-900">
+                                                            <div class="text-[10px] text-slate-500">Pitch Variance</div>
+                                                            <div class="text-xs font-bold text-slate-200 mt-0.5">{voiceFeatures.pitch_variance} Hz²</div>
+                                                        </div>
+                                                        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-900">
+                                                            <div class="text-[10px] text-slate-500">Voice Stability</div>
+                                                            <div class="text-xs font-bold text-slate-200 mt-0.5">{Math.round(voiceFeatures.voice_stability * 100)}%</div>
+                                                        </div>
+                                                        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-900">
+                                                            <div class="text-[10px] text-slate-500">Speaking Rate</div>
+                                                            <div class="text-xs font-bold text-slate-200 mt-0.5">{voiceFeatures.speaking_rate} syll/s</div>
+                                                        </div>
+                                                        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-900">
+                                                            <div class="text-[10px] text-slate-500">Pause Frequency</div>
+                                                            <div class="text-xs font-bold text-slate-200 mt-0.5">{Math.round(voiceFeatures.pause_frequency * 100)}%</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div class="bg-slate-950/70 p-3 border border-slate-900 rounded-xl">
+                                                <span class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Reasoning</span>
+                                                <p class="text-xs text-slate-400 leading-relaxed font-mono">{voiceReasoning}</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Standard Scam threat gauge (always show or for flat text/live mic) */}
+                                    {(!isAudioAnalysis) && (
+                                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-6 items-center">
+                                            <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider self-start">🎯 Scam threat evaluation</h2>
+
+                                            {/* Circular Gauge */}
+                                            <div class="relative flex items-center justify-center">
+                                                <svg class="w-48 h-48 transform -rotate-90">
+                                                    <circle cx="96" cy="96" r="80" stroke="#1e293b" stroke-width="12" fill="transparent" />
+                                                    <circle cx="96" cy="96" r="80"
+                                                        stroke={
+                                                            (activeTab === 'live' ? micRiskScore : scamScore) >= 70 ? '#ef4444' :
+                                                                (activeTab === 'live' ? micRiskScore : scamScore) >= 31 ? '#f59e0b' : '#10b981'
+                                                        }
+                                                        stroke-width="12"
+                                                        fill="transparent"
+                                                        stroke-dasharray="502"
+                                                        stroke-dashoffset={502 - (502 * (activeTab === 'live' ? micRiskScore : scamScore || 0)) / 100}
+                                                        class="transition-all duration-700 ease-out"
+                                                    />
+                                                </svg>
+                                                <div class="absolute flex flex-col items-center justify-center">
+                                                    <span class="text-4xl font-extrabold text-white">
+                                                        {activeTab === 'live' ? micRiskScore : scamScore}%
+                                                    </span>
+                                                    <span class="text-xs text-slate-500 font-semibold uppercase mt-1">Scam Probability</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Action Alert Status Block */}
+                                            <div class={`w-full p-4 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${getRiskColorClass(activeTab === 'live' ? micRiskScore : scamScore)}`}>
+                                                <span class="text-3xl mb-1">
+                                                    {(activeTab === 'live' ? micRiskScore : scamScore) >= 70 ? '🚨' :
+                                                        (activeTab === 'live' ? micRiskScore : scamScore) >= 31 ? '⚠️' : '✅'}
+                                                </span>
+                                                <h3 class="text-md font-extrabold uppercase tracking-wide">
+                                                    {activeTab === 'live' ? micRiskLevel : scamRiskLevel} Risk Detected
+                                                </h3>
+                                                <p class="text-xs opacity-90 mt-1 max-w-xs leading-relaxed">
+                                                    Category: <strong class="underline">{activeTab === 'live' ? micCategory : scamCategory}</strong>
+                                                </p>
+                                            </div>
+
+                                            {isAlarmPlaying && (
+                                                <button onClick={stopHighRiskAlarm} class="w-full mt-1 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl animate-pulse flex items-center justify-center gap-2 border border-rose-400/50 shadow-lg shadow-rose-900/30">
+                                                    <span>🔊 Stop Alarm (30s Warning Active)</span>
+                                                </button>
+                                            )}
+
+                                            {/* Keywords Panel */}
+                                            <div class="w-full flex flex-col gap-2">
+                                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Matched Scam Signatures</span>
+                                                <div class="flex flex-wrap gap-1.5 min-h-[36px]">
+                                                    {(activeTab === 'live' ? micKeywords : scamKeywords)?.length > 0 ? (
+                                                        (activeTab === 'live' ? micKeywords : scamKeywords).map((kw, idx) => (
+                                                            <span key={idx} class="px-2.5 py-1 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg text-xs font-semibold">{kw}</span>
+                                                        ))
+                                                    ) : (
+                                                        <span class="text-slate-600 text-xs">No scam signatures matches found.</span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Evidence report */}
+                                            <div class="w-full bg-slate-950 p-4 border border-slate-900 rounded-xl">
+                                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Evidence Report</span>
+                                                <p class="text-xs text-slate-400 leading-relaxed font-mono">
+                                                    {activeTab === 'live'
+                                                        ? (micRiskScore >= 31 ? `Live conversation matches profile signature of ${micCategory}. Risk evaluation triggered at ${micRiskScore}%.` : 'No prominent threat indicators detected in stream.')
+                                                        : scamEvidence}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Embedded Scam evidence report (for Audio Uploads) */}
+                                    {isAudioAnalysis && (
+                                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col gap-4">
+                                            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">📝 Scam Detection Report</h2>
+
+                                            <div class="flex justify-between items-center bg-slate-950 p-3 border border-slate-900 rounded-xl">
+                                                <div>
+                                                    <div class="text-[10px] text-slate-500">Category</div>
+                                                    <div class="text-sm font-bold text-slate-200 mt-0.5">{scamCategory}</div>
+                                                </div>
+                                                <span class={`px-2.5 py-1 rounded-lg text-xs font-bold ${getRiskBadge(scamRiskLevel)}`}>
+                                                    {scamRiskLevel}
+                                                </span>
+                                            </div>
+
+                                            <div class="flex flex-col gap-2">
+                                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Matched Keywords</span>
+                                                <div class="flex flex-wrap gap-1.5">
+                                                    {scamKeywords.length > 0 ? (
+                                                        scamKeywords.map((kw, idx) => (
+                                                            <span key={idx} class="px-2.5 py-1 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg text-xs font-semibold">{kw}</span>
+                                                        ))
+                                                    ) : (
+                                                        <span class="text-slate-600 text-xs">No scam keywords matches.</span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div class="bg-slate-950 p-4 border border-slate-900 rounded-xl">
+                                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Transcript Evidence</span>
+                                                <p class="text-xs text-slate-400 leading-relaxed font-mono">"{scamTranscript}"</p>
+                                            </div>
+                                        </div>
+                                    )}
+
                                 </div>
                             ) : (
                                 <div class="bg-slate-900/40 border border-slate-800 border-dashed rounded-2xl p-12 text-center text-slate-600 flex flex-col items-center justify-center gap-3">
@@ -614,6 +941,85 @@
 
                     </main>
 
+                    {/* CALL HISTORY MODAL DETAIL PANEL */}
+                    {selectedCall && (
+                        <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                            <div class="glass-card max-w-3xl w-full max-h-[85vh] rounded-2xl p-6 overflow-y-auto flex flex-col gap-5">
+                                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                                    <div>
+                                        <h2 class="text-lg font-bold text-white">Call Evaluation Record</h2>
+                                        <div class="text-xs text-slate-500 font-mono mt-0.5">SID: {selectedCall.call_sid}</div>
+                                    </div>
+                                    <button onClick={() => setSelectedCall(null)} class="text-slate-400 hover:text-white text-xl">✕</button>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-900">
+                                        <span class="text-[10px] text-slate-500 uppercase">From Number</span>
+                                        <div class="text-sm font-semibold mt-0.5">{selectedCall.from_number}</div>
+                                    </div>
+                                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-900">
+                                        <span class="text-[10px] text-slate-500 uppercase">Channel / To</span>
+                                        <div class="text-sm font-semibold mt-0.5">{selectedCall.to_number}</div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-slate-950 p-4 rounded-xl border border-slate-900">
+                                    <span class="text-xs font-bold text-slate-400 uppercase block mb-1">Threat Score Details</span>
+                                    <div class="flex gap-4 items-center mt-2">
+                                        <div class="flex flex-col">
+                                            <span class="text-2xl font-extrabold text-white">{Math.round(selectedCall.final_score * 100)}%</span>
+                                            <span class="text-[10px] text-slate-500 font-bold uppercase mt-0.5">Scam/Threat score</span>
+                                        </div>
+                                        <span class={`px-2.5 py-1 rounded-lg text-xs font-bold ${getRiskBadge(selectedCall.risk_label.toUpperCase())}`}>
+                                            {selectedCall.risk_label.toUpperCase()} RISK
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Voice Analysis Section in Modal */}
+                                {selectedCall.voiceClassification ? (
+                                    <div class="bg-slate-900/60 p-4 border border-slate-800 rounded-xl flex flex-col gap-3">
+                                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">AI Voice Classification Report</h3>
+
+                                        <div class="flex justify-between items-center bg-slate-950 p-2.5 border border-slate-900 rounded-lg">
+                                            <div>
+                                                <div class="text-[10px] text-slate-500 uppercase">Classification</div>
+                                                <div class="text-sm font-bold text-slate-200 mt-0.5">{selectedCall.voiceClassification}</div>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="text-[10px] text-slate-500 uppercase">Confidence</div>
+                                                <div class="text-sm font-bold text-amber-400 mt-0.5">{selectedCall.voiceConfidence}%</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-2 gap-2 text-xs">
+                                            <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-900">
+                                                <div class="text-emerald-400 font-bold">Human probability: {selectedCall.humanVoiceProbability}%</div>
+                                            </div>
+                                            <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-900">
+                                                <div class="text-red-400 font-bold">AI Probability: {selectedCall.aiVoiceProbability}%</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-900 text-center text-xs text-slate-500">
+                                        Voice Analysis not available for this record (text-only evaluation).
+                                    </div>
+                                )}
+
+                                <div class="bg-slate-950 p-4 border border-slate-900 rounded-xl">
+                                    <span class="text-xs font-bold text-slate-400 uppercase block mb-1.5">Transcript Record</span>
+                                    <p class="text-sm text-slate-300 leading-relaxed font-mono">"{selectedCall.transcript || 'No transcript text logged.'}"</p>
+                                </div>
+
+                                <div class="flex justify-end gap-2 border-t border-slate-800 pt-3">
+                                    <button onClick={() => setSelectedCall(null)} class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg text-sm">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Footer */}
                     <footer class="bg-slate-950 border-t border-slate-900 py-6 text-center text-xs text-slate-500">
                         <p>Camp Protect AI Scam Shield — Engineering Final Year Project. Designed Compliance-First under Android 10-15 Regulations.</p>
@@ -626,4 +1032,5 @@
         root.render(<App />);
     </script>
 </body>
+
 </html>
