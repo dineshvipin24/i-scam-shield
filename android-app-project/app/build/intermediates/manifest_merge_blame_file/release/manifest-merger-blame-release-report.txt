@@ -1,0 +1,225 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.campprotect.scamshield"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="34" />
+10
+11    <!-- Permissions required for Call Detection & States -->
+12    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+12-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:6:5-75
+12-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:6:22-72
+13    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+13-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:7:5-77
+13-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:7:22-74
+14
+15    <!-- Role declaration for Call Screening (Android 10+) -->
+16    <uses-permission android:name="android.permission.ROLE_CALL_SCREENING" />
+16-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:10:5-78
+16-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:10:22-75
+17
+18    <!-- Permission required to show Alert Overlay over active call screens -->
+19    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+19-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:13:5-78
+19-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:13:22-75
+20
+21    <!-- Permissions required for Speech-to-Text via Microphone -->
+22    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+22-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:16:5-71
+22-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:16:22-68
+23
+24    <!-- Foreground Service permissions for background recording (Android 14+ compliance) -->
+25    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+25-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:19:5-77
+25-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:19:22-74
+26    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+26-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:20:5-88
+26-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:20:22-85
+27
+28    <!-- Permission for Fraud Alert Sound/Vibration alerts -->
+29    <uses-permission android:name="android.permission.VIBRATE" />
+29-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:23:5-66
+29-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:23:22-63
+30
+31    <!-- Notification permission for foreground alerts (Android 13+) -->
+32    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+32-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:26:5-77
+32-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:26:22-74
+33
+34    <permission
+34-->[androidx.core:core:1.12.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\2f91cfa932c6c90f7445aa6562d39ff4\transformed\core-1.12.0\AndroidManifest.xml:22:5-24:47
+35        android:name="com.campprotect.scamshield.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+35-->[androidx.core:core:1.12.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\2f91cfa932c6c90f7445aa6562d39ff4\transformed\core-1.12.0\AndroidManifest.xml:23:9-81
+36        android:protectionLevel="signature" />
+36-->[androidx.core:core:1.12.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\2f91cfa932c6c90f7445aa6562d39ff4\transformed\core-1.12.0\AndroidManifest.xml:24:9-44
+37
+38    <uses-permission android:name="com.campprotect.scamshield.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+38-->[androidx.core:core:1.12.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\2f91cfa932c6c90f7445aa6562d39ff4\transformed\core-1.12.0\AndroidManifest.xml:26:5-97
+38-->[androidx.core:core:1.12.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\2f91cfa932c6c90f7445aa6562d39ff4\transformed\core-1.12.0\AndroidManifest.xml:26:22-94
+39
+40    <application
+40-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:28:5-75:19
+41        android:allowBackup="true"
+41-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:29:9-35
+42        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+42-->[androidx.core:core:1.12.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\2f91cfa932c6c90f7445aa6562d39ff4\transformed\core-1.12.0\AndroidManifest.xml:28:18-86
+43        android:extractNativeLibs="false"
+44        android:icon="@mipmap/ic_launcher"
+44-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:30:9-43
+45        android:label="@string/app_name"
+45-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:31:9-41
+46        android:roundIcon="@mipmap/ic_launcher_round"
+46-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:32:9-54
+47        android:supportsRtl="true"
+47-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:33:9-35
+48        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" >
+48-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:34:9-77
+49
+50        <!-- Main Launcher Activity (Prominent Disclosure and Consent Flow starts here) -->
+51        <activity
+51-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:37:9-45:20
+52            android:name="com.campprotect.scamshield.activities.MainActivity"
+52-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:38:13-52
+53            android:exported="true"
+53-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:39:13-36
+54            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" >
+54-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:40:13-81
+55            <intent-filter>
+55-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:41:13-44:29
+56                <action android:name="android.intent.action.MAIN" />
+56-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:42:17-69
+56-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:42:25-66
+57
+58                <category android:name="android.intent.category.LAUNCHER" />
+58-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:43:17-77
+58-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:43:27-74
+59            </intent-filter>
+60        </activity>
+61
+62        <!-- Settings Screen Activity -->
+63        <activity
+63-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:48:9-52:69
+64            android:name="com.campprotect.scamshield.activities.SettingsActivity"
+64-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:49:13-56
+65            android:exported="false"
+65-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:50:13-37
+66            android:label="Settings"
+66-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:51:13-37
+67            android:parentActivityName="com.campprotect.scamshield.activities.MainActivity" />
+67-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:52:13-66
+68
+69        <!-- Call Screening Service to intercept incoming calls and trigger analysis -->
+70        <service
+70-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:55:9-62:19
+71            android:name="com.campprotect.scamshield.services.CallScreeningServiceImpl"
+71-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:56:13-62
+72            android:exported="true"
+72-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:58:13-36
+73            android:permission="android.permission.BIND_SCREENING_SERVICE" >
+73-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:57:13-75
+74            <intent-filter>
+74-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:59:13-61:29
+75                <action android:name="android.telecom.CallScreeningService" />
+75-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:60:17-79
+75-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:60:25-76
+76            </intent-filter>
+77        </service>
+78
+79        <!-- Foreground Service that manages microphone recording, STT listener and evaluations (API 34 compliance) -->
+80        <service
+80-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:65:9-68:40
+81            android:name="com.campprotect.scamshield.services.CallMonitoringForegroundService"
+81-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:66:13-69
+82            android:exported="false"
+82-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:68:13-37
+83            android:foregroundServiceType="microphone" />
+83-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:67:13-55
+84
+85        <!-- Alert Overlay Service for drawing warning popups on top of call screens -->
+86        <service
+86-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:71:9-73:40
+87            android:name="com.campprotect.scamshield.overlay.AlertOverlayService"
+87-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:72:13-56
+88            android:exported="false" />
+88-->C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\AndroidManifest.xml:73:13-37
+89
+90        <provider
+90-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\f81ba1de12dc35f5d46cc8263f81fb04\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+91            android:name="androidx.startup.InitializationProvider"
+91-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\f81ba1de12dc35f5d46cc8263f81fb04\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:25:13-67
+92            android:authorities="com.campprotect.scamshield.androidx-startup"
+92-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\f81ba1de12dc35f5d46cc8263f81fb04\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:26:13-68
+93            android:exported="false" >
+93-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\f81ba1de12dc35f5d46cc8263f81fb04\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:27:13-37
+94            <meta-data
+94-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\f81ba1de12dc35f5d46cc8263f81fb04\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+95                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+95-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\f81ba1de12dc35f5d46cc8263f81fb04\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:30:17-75
+96                android:value="androidx.startup" />
+96-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\f81ba1de12dc35f5d46cc8263f81fb04\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:31:17-49
+97            <meta-data
+97-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\6b386869e428cb4214dd07d4cf00cae0\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:29:13-31:52
+98                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+98-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\6b386869e428cb4214dd07d4cf00cae0\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:30:17-78
+99                android:value="androidx.startup" />
+99-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\6b386869e428cb4214dd07d4cf00cae0\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:31:17-49
+100            <meta-data
+100-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:29:13-31:52
+101                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+101-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:30:17-85
+102                android:value="androidx.startup" />
+102-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:31:17-49
+103        </provider>
+104
+105        <service
+105-->[androidx.room:room-runtime:2.6.1] C:\Users\Vipin\.gradle\caches\8.13\transforms\b5f64f73819cab622be31f01f359da0d\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
+106            android:name="androidx.room.MultiInstanceInvalidationService"
+106-->[androidx.room:room-runtime:2.6.1] C:\Users\Vipin\.gradle\caches\8.13\transforms\b5f64f73819cab622be31f01f359da0d\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
+107            android:directBootAware="true"
+107-->[androidx.room:room-runtime:2.6.1] C:\Users\Vipin\.gradle\caches\8.13\transforms\b5f64f73819cab622be31f01f359da0d\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
+108            android:exported="false" />
+108-->[androidx.room:room-runtime:2.6.1] C:\Users\Vipin\.gradle\caches\8.13\transforms\b5f64f73819cab622be31f01f359da0d\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
+109
+110        <receiver
+110-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:34:9-52:20
+111            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+111-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:35:13-76
+112            android:directBootAware="false"
+112-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:36:13-44
+113            android:enabled="true"
+113-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:37:13-35
+114            android:exported="true"
+114-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:38:13-36
+115            android:permission="android.permission.DUMP" >
+115-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:39:13-57
+116            <intent-filter>
+116-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:40:13-42:29
+117                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+117-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:41:17-91
+117-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:41:25-88
+118            </intent-filter>
+119            <intent-filter>
+119-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:43:13-45:29
+120                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+120-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:44:17-85
+120-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:44:25-82
+121            </intent-filter>
+122            <intent-filter>
+122-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:46:13-48:29
+123                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+123-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:47:17-88
+123-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:47:25-85
+124            </intent-filter>
+125            <intent-filter>
+125-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:49:13-51:29
+126                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+126-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:50:17-95
+126-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:50:25-92
+127            </intent-filter>
+128        </receiver>
+129    </application>
+130
+131</manifest>

@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.campprotect.scamshield.app-merged_res-59:/mipmap_ic_launcher_round.xml.flat",
+        "source": "com.campprotect.scamshield.app-main-60:/mipmap/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.campprotect.scamshield.app-merged_res-59:/mipmap_ic_launcher.xml.flat",
+        "source": "com.campprotect.scamshield.app-main-60:/mipmap/ic_launcher.xml"
+    }
+]

@@ -1,0 +1,61 @@
+com.campprotect.scamshield.app-jetified-runtime-saveable-release-0 C:\Users\Vipin\.gradle\caches\8.13\transforms\062ea4ac6639ac44b5a1c5735d5adeea\transformed\jetified-runtime-saveable-release\res
+com.campprotect.scamshield.app-recyclerview-1.1.0-1 C:\Users\Vipin\.gradle\caches\8.13\transforms\0e48c4c21f53195d89a414831bb9d50f\transformed\recyclerview-1.1.0\res
+com.campprotect.scamshield.app-jetified-appcompat-resources-1.6.1-2 C:\Users\Vipin\.gradle\caches\8.13\transforms\10afe0db7603fa11e8fe47682e8a8d73\transformed\jetified-appcompat-resources-1.6.1\res
+com.campprotect.scamshield.app-transition-1.2.0-3 C:\Users\Vipin\.gradle\caches\8.13\transforms\113c33b9353dbc26434091f1a0f3ba2b\transformed\transition-1.2.0\res
+com.campprotect.scamshield.app-jetified-material-icons-extended-release-4 C:\Users\Vipin\.gradle\caches\8.13\transforms\24452d896a6d3416bb49f782914b5ba8\transformed\jetified-material-icons-extended-release\res
+com.campprotect.scamshield.app-lifecycle-runtime-2.7.0-5 C:\Users\Vipin\.gradle\caches\8.13\transforms\25f72f50c1633650650398c70749c3cd\transformed\lifecycle-runtime-2.7.0\res
+com.campprotect.scamshield.app-jetified-activity-compose-1.8.2-6 C:\Users\Vipin\.gradle\caches\8.13\transforms\2759f443d53c4086598205fd4619c0cf\transformed\jetified-activity-compose-1.8.2\res
+com.campprotect.scamshield.app-core-1.12.0-7 C:\Users\Vipin\.gradle\caches\8.13\transforms\2f91cfa932c6c90f7445aa6562d39ff4\transformed\core-1.12.0\res
+com.campprotect.scamshield.app-jetified-lifecycle-viewmodel-ktx-2.7.0-8 C:\Users\Vipin\.gradle\caches\8.13\transforms\30e7ba8027ff96a9204b822024a754f5\transformed\jetified-lifecycle-viewmodel-ktx-2.7.0\res
+com.campprotect.scamshield.app-jetified-savedstate-ktx-1.2.1-9 C:\Users\Vipin\.gradle\caches\8.13\transforms\3141eeac88b8715c8622b6111bc53e87\transformed\jetified-savedstate-ktx-1.2.1\res
+com.campprotect.scamshield.app-lifecycle-viewmodel-2.7.0-10 C:\Users\Vipin\.gradle\caches\8.13\transforms\3517e87d0557317cf6b0869043dca02d\transformed\lifecycle-viewmodel-2.7.0\res
+com.campprotect.scamshield.app-lifecycle-livedata-2.7.0-11 C:\Users\Vipin\.gradle\caches\8.13\transforms\46e15082aa1932a02959348642a980de\transformed\lifecycle-livedata-2.7.0\res
+com.campprotect.scamshield.app-lifecycle-livedata-core-2.7.0-12 C:\Users\Vipin\.gradle\caches\8.13\transforms\4e4973fe0470518715b40cf3e39f7a0f\transformed\lifecycle-livedata-core-2.7.0\res
+com.campprotect.scamshield.app-jetified-ui-util-release-13 C:\Users\Vipin\.gradle\caches\8.13\transforms\5393aa846cec8149fb57d392796989b8\transformed\jetified-ui-util-release\res
+com.campprotect.scamshield.app-jetified-animation-release-14 C:\Users\Vipin\.gradle\caches\8.13\transforms\5a2323b43a91f94b9b01f1593b4dfd62\transformed\jetified-animation-release\res
+com.campprotect.scamshield.app-sqlite-framework-2.4.0-15 C:\Users\Vipin\.gradle\caches\8.13\transforms\5c89610309626417b4a779add5d1db49\transformed\sqlite-framework-2.4.0\res
+com.campprotect.scamshield.app-jetified-activity-1.8.2-16 C:\Users\Vipin\.gradle\caches\8.13\transforms\5e081f905b995d478f568ad6a8750c2f\transformed\jetified-activity-1.8.2\res
+com.campprotect.scamshield.app-jetified-material-ripple-release-17 C:\Users\Vipin\.gradle\caches\8.13\transforms\64fa9971de10d403cb7631e81ff17e29\transformed\jetified-material-ripple-release\res
+com.campprotect.scamshield.app-jetified-profileinstaller-1.3.0-18 C:\Users\Vipin\.gradle\caches\8.13\transforms\65bc3224cfaae00e1d88821dba64fe76\transformed\jetified-profileinstaller-1.3.0\res
+com.campprotect.scamshield.app-jetified-material-icons-core-release-19 C:\Users\Vipin\.gradle\caches\8.13\transforms\67c74fb5d5dcd03c6d3a8b8dc539af8a\transformed\jetified-material-icons-core-release\res
+com.campprotect.scamshield.app-jetified-lifecycle-process-2.7.0-20 C:\Users\Vipin\.gradle\caches\8.13\transforms\6b386869e428cb4214dd07d4cf00cae0\transformed\jetified-lifecycle-process-2.7.0\res
+com.campprotect.scamshield.app-jetified-savedstate-1.2.1-21 C:\Users\Vipin\.gradle\caches\8.13\transforms\6f599889efeb8da70bc2c54c979ffe41\transformed\jetified-savedstate-1.2.1\res
+com.campprotect.scamshield.app-drawerlayout-1.1.1-22 C:\Users\Vipin\.gradle\caches\8.13\transforms\712ec693409f0cecaa78ca2df0d16bb1\transformed\drawerlayout-1.1.1\res
+com.campprotect.scamshield.app-sqlite-2.4.0-23 C:\Users\Vipin\.gradle\caches\8.13\transforms\72655888b535a811ef2bb1af8bd2eb46\transformed\sqlite-2.4.0\res
+com.campprotect.scamshield.app-coordinatorlayout-1.1.0-24 C:\Users\Vipin\.gradle\caches\8.13\transforms\730611faba0f5329559f071bbd09078f\transformed\coordinatorlayout-1.1.0\res
+com.campprotect.scamshield.app-jetified-ui-text-release-25 C:\Users\Vipin\.gradle\caches\8.13\transforms\7943f8db300024ec35f5c3ee577a3aaf\transformed\jetified-ui-text-release\res
+com.campprotect.scamshield.app-jetified-ui-graphics-release-26 C:\Users\Vipin\.gradle\caches\8.13\transforms\7ca181d5dd00942503383e374a483b2b\transformed\jetified-ui-graphics-release\res
+com.campprotect.scamshield.app-jetified-ui-release-27 C:\Users\Vipin\.gradle\caches\8.13\transforms\8315c7fa57514e857d0e5e954042176d\transformed\jetified-ui-release\res
+com.campprotect.scamshield.app-jetified-annotation-experimental-1.3.0-28 C:\Users\Vipin\.gradle\caches\8.13\transforms\883bf246a71a22539e6a0b1200582eb7\transformed\jetified-annotation-experimental-1.3.0\res
+com.campprotect.scamshield.app-jetified-ui-tooling-preview-release-29 C:\Users\Vipin\.gradle\caches\8.13\transforms\88d97656e3fce17af52c1d90e20d9548\transformed\jetified-ui-tooling-preview-release\res
+com.campprotect.scamshield.app-jetified-animation-core-release-30 C:\Users\Vipin\.gradle\caches\8.13\transforms\8bcce2e0a178db0a66bfaa07e11b841d\transformed\jetified-animation-core-release\res
+com.campprotect.scamshield.app-jetified-customview-poolingcontainer-1.0.0-31 C:\Users\Vipin\.gradle\caches\8.13\transforms\99b88fbd11bf2b1ea890a816c9ab569a\transformed\jetified-customview-poolingcontainer-1.0.0\res
+com.campprotect.scamshield.app-jetified-activity-ktx-1.8.2-32 C:\Users\Vipin\.gradle\caches\8.13\transforms\9ae08c0b67e5fe91fd403a5d8bc01538\transformed\jetified-activity-ktx-1.8.2\res
+com.campprotect.scamshield.app-jetified-emoji2-views-helper-1.3.0-33 C:\Users\Vipin\.gradle\caches\8.13\transforms\aa7ffc3a1cc8003011e7d80d71602d19\transformed\jetified-emoji2-views-helper-1.3.0\res
+com.campprotect.scamshield.app-jetified-ui-geometry-release-34 C:\Users\Vipin\.gradle\caches\8.13\transforms\ae2f1205d82e2738eee92d7c79b7a749\transformed\jetified-ui-geometry-release\res
+com.campprotect.scamshield.app-room-runtime-2.6.1-35 C:\Users\Vipin\.gradle\caches\8.13\transforms\b5f64f73819cab622be31f01f359da0d\transformed\room-runtime-2.6.1\res
+com.campprotect.scamshield.app-cardview-1.0.0-36 C:\Users\Vipin\.gradle\caches\8.13\transforms\b9675860ce953cca56d07c2e2e87302d\transformed\cardview-1.0.0\res
+com.campprotect.scamshield.app-material-1.11.0-37 C:\Users\Vipin\.gradle\caches\8.13\transforms\c6738e287aeccb818d665bedc8ce89ec\transformed\material-1.11.0\res
+com.campprotect.scamshield.app-jetified-ui-unit-release-38 C:\Users\Vipin\.gradle\caches\8.13\transforms\c90909057b16ec19e3473f5847dde999\transformed\jetified-ui-unit-release\res
+com.campprotect.scamshield.app-jetified-lifecycle-runtime-ktx-2.7.0-39 C:\Users\Vipin\.gradle\caches\8.13\transforms\cd9e538353786f069f488c904aeea9ca\transformed\jetified-lifecycle-runtime-ktx-2.7.0\res
+com.campprotect.scamshield.app-jetified-core-ktx-1.12.0-40 C:\Users\Vipin\.gradle\caches\8.13\transforms\ce4597c31dbc42b0976b078182e2e549\transformed\jetified-core-ktx-1.12.0\res
+com.campprotect.scamshield.app-jetified-runtime-release-41 C:\Users\Vipin\.gradle\caches\8.13\transforms\d57fd29ab33ca97748d1f8b251c17e97\transformed\jetified-runtime-release\res
+com.campprotect.scamshield.app-jetified-lifecycle-livedata-core-ktx-2.7.0-42 C:\Users\Vipin\.gradle\caches\8.13\transforms\d65f24eb8248946d58139438e5aece85\transformed\jetified-lifecycle-livedata-core-ktx-2.7.0\res
+com.campprotect.scamshield.app-jetified-material3-1.1.2-43 C:\Users\Vipin\.gradle\caches\8.13\transforms\d7ab80990f8fe089501fa034a6e2658f\transformed\jetified-material3-1.1.2\res
+com.campprotect.scamshield.app-appcompat-1.6.1-44 C:\Users\Vipin\.gradle\caches\8.13\transforms\daa89c474153346540e5fb91c734fb31\transformed\appcompat-1.6.1\res
+com.campprotect.scamshield.app-constraintlayout-2.0.1-45 C:\Users\Vipin\.gradle\caches\8.13\transforms\dda57bf50208d0f811cdbe3b052030c4\transformed\constraintlayout-2.0.1\res
+com.campprotect.scamshield.app-jetified-viewpager2-1.0.0-46 C:\Users\Vipin\.gradle\caches\8.13\transforms\e021311d4fe62a620d61f571ba3c5a25\transformed\jetified-viewpager2-1.0.0\res
+com.campprotect.scamshield.app-jetified-room-ktx-2.6.1-47 C:\Users\Vipin\.gradle\caches\8.13\transforms\e2400dddfcd034611c3ed00c4fcea9fc\transformed\jetified-room-ktx-2.6.1\res
+com.campprotect.scamshield.app-jetified-foundation-layout-release-48 C:\Users\Vipin\.gradle\caches\8.13\transforms\e494e3e250e227678cbfb9b4238c6883\transformed\jetified-foundation-layout-release\res
+com.campprotect.scamshield.app-jetified-startup-runtime-1.1.1-49 C:\Users\Vipin\.gradle\caches\8.13\transforms\e93a07394b6c29a76eef8c715c8262e5\transformed\jetified-startup-runtime-1.1.1\res
+com.campprotect.scamshield.app-jetified-lifecycle-viewmodel-savedstate-2.7.0-50 C:\Users\Vipin\.gradle\caches\8.13\transforms\ef0e707c219aa75b9f8a3d028f46ad47\transformed\jetified-lifecycle-viewmodel-savedstate-2.7.0\res
+com.campprotect.scamshield.app-core-runtime-2.2.0-51 C:\Users\Vipin\.gradle\caches\8.13\transforms\f407fe950f41210ad0f3f16118187aea\transformed\core-runtime-2.2.0\res
+com.campprotect.scamshield.app-jetified-foundation-release-52 C:\Users\Vipin\.gradle\caches\8.13\transforms\f43453530d4c5ac6015ca3eb1b76a521\transformed\jetified-foundation-release\res
+com.campprotect.scamshield.app-fragment-1.3.6-53 C:\Users\Vipin\.gradle\caches\8.13\transforms\f4ba2f76ee21690a6deb72644e969c09\transformed\fragment-1.3.6\res
+com.campprotect.scamshield.app-jetified-emoji2-1.3.0-54 C:\Users\Vipin\.gradle\caches\8.13\transforms\f81ba1de12dc35f5d46cc8263f81fb04\transformed\jetified-emoji2-1.3.0\res
+com.campprotect.scamshield.app-resValues-55 C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\build\generated\res\resValues\release
+com.campprotect.scamshield.app-packageReleaseResources-56 C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\build\intermediates\incremental\release\packageReleaseResources\merged.dir
+com.campprotect.scamshield.app-packageReleaseResources-57 C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\build\intermediates\incremental\release\packageReleaseResources\stripped.dir
+com.campprotect.scamshield.app-merged_res-58 C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\build\intermediates\merged_res\release
+com.campprotect.scamshield.app-main-59 C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\main\res
+com.campprotect.scamshield.app-release-60 C:\Users\Vipin\OneDrive\Desktop\AI calling\android-app-project\app\src\release\res
