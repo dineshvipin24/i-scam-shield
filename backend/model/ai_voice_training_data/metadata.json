@@ -1,0 +1,3625 @@
+{
+  "samples": [
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.2639990283070026,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.31928666657734,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.701310298192316,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.500900781877868,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.5455508057710405,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.411772535094908,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.334483707618642,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.552315864210092,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.698408880653578,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.4198906333077908,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.318709396898374,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.46312670678838,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.672820904611852,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.6005088718492626,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.8783539947943027,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.436454266159103,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.7566836085519446,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.2881754643693566,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.652916561432612,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.832033901055227,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.007245978550987,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.2558271529915865,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.410403585951416,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.624880189102578,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.8039033214291154,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.804179470767593,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.6949163871178325,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.181700138064432,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.006962679092716,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.9987205128492955,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.073451513410647,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.767995814341278,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.087130223743115,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.792518381036047,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.8622887650113307,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.775112258804838,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.914362470976584,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.8498713918022895,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.5829595870047592,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.43846718445451,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.5465285842879584,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.935178936148848,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.737700019167566,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.6715498685166064,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.679865405575934,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.0720411208746654,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.3408043314278304,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.644880042773421,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.403390695879564,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.7396482357514387,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.4016009990930227,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.5769301447431054,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.827729279395331,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.793524862282507,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.475183248763683,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.861653933354849,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.842450447076971,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.232529480048478,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.904809724280779,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.444400036721052,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.755192229973287,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.6153259611227835,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.2846734977192136,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.1667917816230196,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.418118655083539,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.348520442015827,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.138375025849543,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.2579977110925986,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.168839235485224,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.1134413100246108,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.53490926449148,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.343461206211625,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.369870058882234,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.67992581364269,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.012943894892863,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.090147729506657,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.8238387014235853,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.3461150815166745,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.915864319011806,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.482773796403509,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.6857540118229934,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.126187753933248,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.2806856937501063,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.240364795207702,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.5568414503132293,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.45334849822408,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.6915552440746815,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.486229325050732,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.3726880748980412,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.8892138407008745,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.7477434779589687,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.906107898162768,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.872663405129904,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.3554577862964425,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.783283363950664,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.425954293958185,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.57397758568751,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.2578610208555525,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.5130797973824808,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.502904501308178,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.800787245304446,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.5174172465897335,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.625942375690002,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.4274071515548155,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.167064995380475,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.874086345552605,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.2232133983901763,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.6464825429753467,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.3169270297918225,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.768335474311493,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.751344009361441,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.653710185846455,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.20001407879335,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.1157426592837307,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.617048667793785,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.150832688362386,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.8229087966709754,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.906919159755822,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.198901780646295,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.225384359943637,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.939676841112499,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.139992741339243,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.8334663943451828,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.5478295118616137,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.667524161180369,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.487421922868018,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.957372774560374,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.3991573781731987,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.4644440568179387,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.053289234861076,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.62106628154223,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.7737369423239997,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.817030029072335,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.0976560663842374,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.125754065394758,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.643558610994715,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.957012751055264,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.8036491343570953,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.5610602748272155,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.9499598656527333,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 3.4061549120678816,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.376099427386782,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.8920947910578665,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.4247255313780633,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.406496126665794,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.303936375494178,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.5449787538500823,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.575062632156202,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 2.6082368184620286,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 0,
+      "source": "synthetic_human",
+      "duration": 4.270150695811544,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.030820715678418,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.699489056221927,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.4566565182467217,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.837815966439403,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.324931520422073,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.515487580949852,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.9792424912969335,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.7160840627250797,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.903836610816978,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.755664002199498,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.2938353376191074,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.203623115020099,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.837337297426189,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.6635890731301894,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.5701444741542514,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.484870351194609,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.9455758710770144,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.31706887668456,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.4730389043994574,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.982929557029892,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.1968684128182208,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.2810362126202053,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.935586678820592,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.754634281672822,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.0003635559376742,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.708833503919381,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.9433263163587524,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.050370037878789,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.7199441255956383,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.985220500491211,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.506792811556538,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.980185261007823,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.710616596893545,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.679417298687789,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.902303361026806,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.361040314709999,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.7745033825739203,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.879718466120405,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.02434821741139,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.492286478408316,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.348318644343153,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.108611990170033,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.789334965870337,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.0292766297275664,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.4795862948049594,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.52286904494999,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.1443300638061182,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.9551374785547244,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.8461775721086178,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.3497794269847483,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.309251331309937,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.1414605267370272,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.5441433535152838,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.979744303846849,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.211779123734299,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.9046678082697808,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.5301980659728778,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.9198397865759107,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.929630759256683,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.6765238415738635,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.224010637399886,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.861378346106425,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.7372766115423484,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.7822269806535984,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.27041908863447,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.748492130125603,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.096710667295029,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.7950207103043176,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.7165454235195376,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.628432960472143,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.4396401100773106,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.8099775261359117,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.346674887633666,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.4317951784344127,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.8247722557655566,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.3460220482477614,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.269407167146831,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.196101080383792,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.306838350193634,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.2443058160990277,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.1669552873839613,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.94440910040879,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.472501138620337,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.030280518503575,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.962446803450419,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.956211419958266,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.323640738867769,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.3178809188720306,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.2143335051940918,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.224285169800153,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.1902169688708604,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.0443550077508768,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.0909812388927467,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.5533606982017565,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.025254245728509,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.677391424278619,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.986702616760409,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.8234433744475984,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.3855021339254145,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.687604515826043,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.180831028128177,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.5597522086577587,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.487696715800132,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.3773563412393903,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.3599593370931933,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.0633071251754975,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.9529191277129954,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.963626346688053,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.765805867806483,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.327966520012046,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.721481505750207,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.040143378704702,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.707834503698963,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.4249532444479804,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.671619679161288,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.5103111549128188,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.1578993206641317,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.3897373547609835,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.8011650109821065,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.4582335963107487,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.767811007347062,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.701441291517007,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.414837028315554,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.458028357183878,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.703706306257018,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.940487912251301,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.6447116740945784,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.513084016445395,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.715640806623478,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.029241062114349,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.892833231506895,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.006214376335582,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.735323038529682,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.1950635692074947,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.8888677124073707,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.5779956573055043,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.847027559286811,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.2588978862024245,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.4278758607925117,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.9717116062629065,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.6816833984102257,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.628662969950273,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.5469690371259306,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.2644827520518214,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 4.3806129758167405,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.6397353897315146,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.078423281169699,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.027542469582138,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 3.866413082286917,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 1,
+      "source": "synthetic_ai",
+      "duration": 2.5713699554007716,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.5331877335522144,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.218565204080649,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.715349093467809,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.863009367415346,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.7478324358812647,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.336098073480721,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.124799475938189,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.0569306329367394,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.1695561539382093,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.3353181303270985,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.257947693288676,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.511464965511109,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.1314627777814756,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.122051236079427,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.518443826013014,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.5994071368472045,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.29001543020722,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.014601600838841,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.354134841303388,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.1566488000580777,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.4879679981972753,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.563307258107729,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.4939260492585227,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.824841208721685,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.0481547302225906,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.7836834884785477,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.748032357913093,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.521856279711913,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.3017106999883845,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.2128724884980056,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.238869903534511,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.404689047836543,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.6557995408181974,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.751267842588036,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.09299677458051,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.863816502092007,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.6119173957692903,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.378008052621718,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.72371430490173,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.384504003920265,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.127918689051894,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.1651858193263207,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.5087074873573325,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.6176987258101376,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.469996943569761,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.925268368358321,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.609385171623595,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.442980765913031,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.89865515500156,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.35314393292184,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.4578169867838846,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.3153536955423974,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.4398315822919514,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.383132232482237,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.2195653223157628,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.8893531799023418,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.485137415312834,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.268633816659013,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.7115127094977476,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.006762652815952,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.8188063616125385,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.978445064511577,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.076000726499325,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.4511995272321014,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.6619878799810612,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.9801847478986745,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.472347452401657,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.7626774744185507,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.1101548375124946,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.3626326400113147,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.759699976408617,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.364470950671461,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.9160119346755167,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.954877468667661,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.097817568266907,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.7420626147621094,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.5153989436526047,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.143154355129491,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.544244193901429,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.627891950533223,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.499974798321721,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.1837473291230007,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.044973862453684,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.322565509414193,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.368953580249652,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.714592721747371,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.191708063704767,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.124468269013842,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.4855683871019387,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.6991907658523906,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.18390116100573,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.5245601611168365,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.931231872368429,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.702005249992173,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.373135004649743,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.1506222356945983,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.4197244960967033,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.184518521789241,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.6860271142242924,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.77486631243485,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.2773277848796822,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.475244492370882,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.293368587113527,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.790860783126778,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.431141118352799,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.4832115639589185,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.3101680791701265,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.024446908555826,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.5301232719216733,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.7316744513019184,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.8593907903714233,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.6582772308957203,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.996490416744091,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.381406284603061,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.304184487530053,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.951048814496065,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.0187403224377847,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.827142729129861,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.2233348981124985,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.573729947643289,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.8464772563356737,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.411108482979981,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.948727692309489,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.600177265668037,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.484911261808596,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.906057917327233,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.630045279767292,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.1567456967281835,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.2111141915644463,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.3260121777507323,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.870133526002361,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.792442442390697,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.0592204491581483,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.5954950883017043,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.818671521356893,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.321326024870725,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.0256310657095598,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.70126826900632,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.1341926716036785,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.530183999187747,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.062324085211663,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.7234208768536146,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.6892127799194245,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.6689698632000987,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.797561199198906,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.9726511999964043,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 4.696397763917376,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.8370577357131044,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 2.608043191464736,
+      "metadata": {
+        "synthetic": true
+      }
+    },
+    {
+      "label": 2,
+      "source": "synthetic_deepfake",
+      "duration": 3.4590458067901664,
+      "metadata": {
+        "synthetic": true
+      }
+    }
+  ],
+  "config": {
+    "num_features": 13,
+    "seq_len": 200,
+    "sample_rate": 16000
+  },
+  "stats": {
+    "total_samples": 450,
+    "distribution": {
+      "Human": 150,
+      "AI-Generated": 150,
+      "Deepfake": 150
+    },
+    "sources": {
+      "synthetic_ai": 150,
+      "synthetic_deepfake": 150,
+      "synthetic_human": 150
+    },
+    "total_duration_seconds": 1554.3914327801276,
+    "avg_duration_seconds": 3.454203183955836
+  },
+  "log": []
+}

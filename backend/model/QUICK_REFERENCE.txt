@@ -1,0 +1,195 @@
+"""
+QUICK REFERENCE - AI Voice Detection
+
+Print this or keep it handy!
+"""
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    🎤 AI VOICE DETECTION - QUICK START                        ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+📍 LOCATION
+  backend/model/
+
+
+🚀 QUICKEST START (copy & paste)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# 1. Install (2 minutes)
+cd backend/model
+pip install -r requirements_ai_voice.txt
+
+# 2. Train (5 minutes)  
+python quick_train_ai_voice.py ^
+  --elevenlabs-file "c:\Users\Vipin\Downloads\ElevenLabs_2026-06-07T13_01_52_Roger_pre_sp100_s50_sb75_se0_b_m2.mp3" ^
+  --train
+
+# 3. Test (1 minute)
+python quick_train_ai_voice.py --test-file "audio.mp3"
+
+
+📊 WHAT IT DETECTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Human Voices          Real speech from people
+✅ AI-Generated         ElevenLabs, Google TTS, Amazon Polly, etc.
+✅ Deepfake/Synthetic   Voice cloning, vocoder synthesis
+
+
+📁 FILES CREATED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Main Code:
+  ai_voice_detector.py              Inference engine
+  ai_voice_dataset_builder.py       Dataset preparation
+  train_ai_voice_model.py           Training script
+  quick_train_ai_voice.py           Quick start script
+  prepare_voice_data.py             Data organization
+
+Documentation:
+  README_AI_VOICE.md                👈 START HERE
+  AI_VOICE_TRAINING_GUIDE.md        Detailed guide
+  INTEGRATION_GUIDE.md              Integration examples
+  SETUP_COMPLETE.md                 Overview
+
+Config:
+  requirements_ai_voice.txt         Dependencies
+
+Model:
+  ai_voice_model.pth                Trained model (created after training)
+
+
+🎯 COMMON COMMANDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Setup folder structure
+python prepare_voice_data.py --setup
+
+# Train with specific file
+python quick_train_ai_voice.py --elevenlabs-file "voice.mp3" --train
+
+# Train with more data
+python quick_train_ai_voice.py ^
+  --elevenlabs-file voice.mp3 ^
+  --human-samples 200 ^
+  --ai-samples 200 ^
+  --train
+
+# Test on audio
+python quick_train_ai_voice.py --test-file "audio.mp3"
+
+# Full workflow (advanced)
+python prepare_voice_data.py --build-dataset
+python prepare_voice_data.py --train-model
+
+# Custom training
+python train_ai_voice_model.py ^
+  --dataset-dir voice_dataset ^
+  --epochs 50 ^
+  --batch-size 32 ^
+  --device cuda
+
+
+💻 PYTHON USAGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+from backend.model.ai_voice_detector import AIVoiceDetector
+
+# Initialize
+detector = AIVoiceDetector()
+
+# Predict from file
+prediction, probs = detector.predict_file("audio.mp3")
+
+# Predict from bytes
+prediction, probs = detector.predict_pcm(pcm_bytes)
+
+# Check result
+print(f"Prediction: {prediction}")
+print(f"Confidence: {max(probs.values()):.1%}")
+
+if probs['AI-Generated'] > 0.7:
+    print("⚠️  AI-Generated voice detected!")
+
+
+📊 EXPECTED RESULTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Training Time:
+  GPU:  2-5 minutes
+  CPU:  5-15 minutes
+
+Accuracy:
+  Baseline:     80-85% (synthetic data)
+  Good data:    85-92% (200+ samples per class)
+  Great data:   92-96% (500+ samples per class)
+
+Inference:
+  Speed:        200-500ms per audio
+  Memory:       ~500-800MB
+
+
+⚙️  TRAINING DATA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Where to put files:
+
+voice_data/
+├── human_voices/        ← Real speech
+├── elevenlabs/          ← ElevenLabs samples (YOUR FILE GOES HERE)
+├── google_tts/          ← Google TTS
+├── amazon_polly/        ← Amazon Polly
+└── deepfake_synthetic/  ← Deepfakes
+
+
+🔧 TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ "soundfile not found"
+→ pip install soundfile scipy
+
+❌ "Out of memory"  
+→ Use smaller batch size or CPU
+
+❌ "File not found"
+→ Use absolute path: c:\full\path\to\file.mp3
+
+❌ "Poor accuracy"
+→ Add more diverse training data (200+ per class)
+
+
+📞 QUICK HELP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Need more info?
+  1. README_AI_VOICE.md          ← 5 min overview
+  2. AI_VOICE_TRAINING_GUIDE.md  ← Complete reference
+  3. INTEGRATION_GUIDE.md         ← Integration examples
+  4. Code docstrings              ← Implementation details
+
+
+🎯 NEXT STEPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Today:
+  [ ] Install dependencies
+  [ ] Run quick training
+  [ ] Test on sample audio
+
+This Week:
+  [ ] Add more training data
+  [ ] Retrain for better accuracy
+  [ ] Integrate with Android app
+
+Next:
+  [ ] Deploy to production
+  [ ] Monitor performance
+  [ ] Collect feedback
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    Ready to start? Run this command:                          ║
+║                                                                                ║
+║  python quick_train_ai_voice.py --elevenlabs-file "voice.mp3" --train        ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝

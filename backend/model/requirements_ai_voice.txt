@@ -1,0 +1,15 @@
+# AI Voice Detection Model - Requirements
+# Install with: pip install -r requirements_ai_voice.txt
+
+# Core ML/Audio Libraries
+torch>=2.0.0              # PyTorch deep learning framework
+numpy>=1.21.0            # Numerical computing
+scipy>=1.7.0             # Scientific computing (signal processing)
+scikit-learn>=1.0.0      # Machine learning utilities
+
+# Audio Processing
+librosa>=0.9.0           # Audio analysis (optional, enhanced feature extraction)
+soundfile>=0.10.0        # Audio file I/O (WAV, FLAC, etc.)
+
+# For MP3/OGG support (optional)
+pydub>=0.25.0            # Audio format conversion
