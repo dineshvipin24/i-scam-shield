@@ -833,7 +833,7 @@ async def analyze_audio(file: UploadFile = File(...), db: Session = Depends(get_
                 tmp_path = tmp.name
             
             try:
-                import whisper
+                from stt_client import _load_whisper
                 model = _load_whisper()
                 if model:
                     result = model.transcribe(tmp_path, fp16=False, task="translate")

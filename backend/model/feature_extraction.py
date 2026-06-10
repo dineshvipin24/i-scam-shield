@@ -62,7 +62,7 @@ def _decode_raw_pcm(file_bytes: bytes, target_sr: int = 16000) -> bytes:
                 for frame in container.decode(audio_stream):
                     resampled_frames = resampler.resample(frame)
                     for rf in resampled_frames:
-                        pcm_data.extend(rf.planes[0].to_ndarray().tobytes())
+                        pcm_data.extend(bytes(rf.planes[0]))
                 if len(pcm_data) > 0:
                     return bytes(pcm_data)
         except Exception as e:

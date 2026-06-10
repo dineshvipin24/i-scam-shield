@@ -142,10 +142,11 @@ def simulate_ai_features() -> np.ndarray:
     
     # Pitch features (46 to 50)
     feats[46] = np.random.uniform(110, 230)  # Pitch mean
-    feats[47] = np.random.uniform(5, 120)  # Pitch variance (extremely low!)
-    feats[48] = np.random.uniform(5, 45)  # Pitch range
-    feats[49] = np.random.uniform(0.0008, 0.006)  # Jitter (extremely low!)
-    feats[50] = np.random.uniform(0.001, 0.018)  # Shimmer (extremely low!)
+    # AI pitch variance can be very low (monotonic) OR very high due to pitch tracking octave jumps (common in compressed TTS)
+    feats[47] = float(np.random.choice([np.random.uniform(5, 250), np.random.uniform(1000, 9000)]))
+    feats[48] = np.random.uniform(5, 300)  # Pitch range
+    feats[49] = np.random.uniform(0.0008, 0.022)  # Jitter (can be low, but can also be moderate due to compression)
+    feats[50] = np.random.uniform(0.001, 0.075)  # Shimmer (can be low, but can also be moderate due to compression)
     
     # Spectral Contrast mean (51 to 56)
     feats[51:57] = np.random.uniform(1.8, 3.6, size=6)
@@ -157,8 +158,8 @@ def simulate_ai_features() -> np.ndarray:
     # Rolloff std (64)
     feats[64] = np.random.uniform(80, 380)
     
-    # Voice stability (65) - AI has high stability
-    feats[65] = np.random.uniform(0.78, 0.98)
+    # Voice stability (65) - AI can be very stable, or have lower stability due to tracking errors
+    feats[65] = np.random.uniform(0.10, 0.98)
     # Prosody score (66) - AI has low prosody variance
     feats[66] = np.random.uniform(0.001, 0.015)
     # Speaking rate (67) - AI speaks at highly regular rate

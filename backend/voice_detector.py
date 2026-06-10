@@ -48,7 +48,7 @@ def decode_audio_to_pcm(file_bytes: bytes) -> bytes:
             for frame in container.decode(audio_stream):
                 resampled_frames = resampler.resample(frame)
                 for rf in resampled_frames:
-                    pcm_data.extend(rf.planes[0].to_ndarray().tobytes())
+                    pcm_data.extend(bytes(rf.planes[0]))
             if len(pcm_data) > 0:
                 print(f"[Audio Decode] PyAV success: {len(pcm_data)} bytes PCM")
                 return bytes(pcm_data)
@@ -617,6 +617,21 @@ class AIVoiceDetector:
             return sanitize_dict_floats(result)
 
         signal = np.frombuffer(pcm_bytes, dtype=np.int16).astype(np.float32) / 32768.0
+
+        # Check for silence/empty signal
+        if len(signal) == 0 or np.max(np.abs(signal)) < 0.001:
+            result = {
+                "ai_voice_score": 0.0,
+                "risk_level": "Safe Call",
+                "voice_classification": "Likely Human",
+                "confidence_score": 95.0,
+                "human_voice_probability": 100.0,
+                "ai_voice_probability": 0.0,
+                "features": extract_acoustic_features(np.zeros(0)),
+                "reasoning": "Silence or insufficient voice signal detected. Defaulting to safe human classification."
+            }
+            return sanitize_dict_floats(result)
+
         features = extract_acoustic_features(signal, sr=16000)
 
         # === Always run heuristic classifier (uses new advanced features) ===
@@ -633,10 +648,28 @@ class AIVoiceDetector:
                 print(f"[AIVoiceDetector Warn] ML model failed: {e}")
                 ml_score = None
 
-        # === Combine scores: ML model is primary (85%), Heuristic is secondary (15%) ===
+        # === Combine scores: Heuristic model is highly calibrated for real mic physics ===
         if ml_score is not None:
-            # ML Model is primary for high accuracy on modern neural voice synthesis (ElevenLabs, etc.)
-            ai_score = round(ml_score * 0.85 + heuristic_score * 0.15, 1)
+            # Blend ML model (40%) and Heuristic (60%) for high real-world stability
+            ai_score = round(ml_score * 0.40 + heuristic_score * 0.60, 1)
+            
+            # Ground the ML model prediction using the heuristic baseline:
+            # If physical heuristics strongly indicate a real human (score < 15%),
+            # cap the combined score to prevent simulated-data ML model baseline drift.
+            # But do NOT cap if individual features show strong indicators of AI synthesis.
+            if heuristic_score < 15.0:
+                is_suspicious_ai = (
+                    features.get("spectral_flatness", 1.0) < 0.06 or
+                    features.get("harmonic_ratio", 1.0) < 0.18 or
+                    features.get("temporal_smoothness", 0.0) > 0.65 or
+                    features.get("spectral_flux_std", 1.0) < 0.6 or
+                    features.get("hnr", 0.0) > 12.0 or
+                    features.get("micro_modulation", 1.0) < 0.04 or
+                    features.get("breathing_detected", 1.0) < 0.018 or
+                    features.get("prosody_score", 1.0) < 0.08
+                )
+                if not is_suspicious_ai:
+                    ai_score = min(ai_score, round(heuristic_score + 5.0, 1))
         else:
             ai_score = heuristic_score
 
