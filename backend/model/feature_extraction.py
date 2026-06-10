@@ -1,7 +1,8 @@
 """
 feature_extraction.py - Enhanced Audio Feature Extraction for AI Voice Detection
 Extracts: MFCC, Spectral Centroid, Spectral Bandwidth, Zero Crossing Rate,
-           RMS Energy, Chroma Features, Pitch Features.
+           RMS Energy, Chroma Features, Pitch Features, Spectral Contrast,
+           Spectral Roll-off, Voice Stability, Prosody, Speaking Rate, Pause Analysis.
 
 Designed to work on 8GB RAM laptops without heavy dependencies.
 Uses numpy + scipy only (no librosa required).
@@ -227,15 +228,12 @@ def extract_mfcc(signal: np.ndarray, sr: int = 16000, num_cep: int = 13,
 
 def extract_spectral_centroid(signal: np.ndarray, sr: int = 16000,
                                nfft: int = 512, hop: int = 160) -> np.ndarray:
-    """
-    Compute spectral centroid for each frame.
-    """
+    """Compute spectral centroid for each frame."""
     if len(signal) < nfft:
         return np.array([0.0])
 
     num_frames = 1 + (len(signal) - nfft) // hop
     centroids = np.zeros(num_frames)
-
     freqs = np.fft.rfftfreq(nfft, d=1.0 / sr)
 
     for i in range(num_frames):
@@ -253,16 +251,13 @@ def extract_spectral_centroid(signal: np.ndarray, sr: int = 16000,
 
 def extract_spectral_bandwidth(signal: np.ndarray, sr: int = 16000,
                                 nfft: int = 512, hop: int = 160) -> np.ndarray:
-    """
-    Compute spectral bandwidth for each frame.
-    """
+    """Compute spectral bandwidth for each frame."""
     if len(signal) < nfft:
         return np.array([0.0])
 
     centroids = extract_spectral_centroid(signal, sr, nfft, hop)
     num_frames = len(centroids)
     bandwidths = np.zeros(num_frames)
-
     freqs = np.fft.rfftfreq(nfft, d=1.0 / sr)
 
     for i in range(num_frames):
@@ -279,9 +274,7 @@ def extract_spectral_bandwidth(signal: np.ndarray, sr: int = 16000,
 
 def extract_zero_crossing_rate(signal: np.ndarray, frame_len: int = 400,
                                 hop: int = 160) -> np.ndarray:
-    """
-    Compute zero crossing rate per frame.
-    """
+    """Compute zero crossing rate per frame."""
     if len(signal) < frame_len:
         if len(signal) > 1:
             zcr_val = np.mean(np.abs(np.diff(np.sign(signal)))) / 2
@@ -300,9 +293,7 @@ def extract_zero_crossing_rate(signal: np.ndarray, frame_len: int = 400,
 
 def extract_rms_energy(signal: np.ndarray, frame_len: int = 400,
                         hop: int = 160) -> np.ndarray:
-    """
-    Compute RMS energy per frame.
-    """
+    """Compute RMS energy per frame."""
     if len(signal) < frame_len:
         return np.array([np.sqrt(np.mean(signal ** 2))])
 
@@ -319,9 +310,7 @@ def extract_rms_energy(signal: np.ndarray, frame_len: int = 400,
 def extract_chroma_features(signal: np.ndarray, sr: int = 16000,
                              nfft: int = 512, hop: int = 160,
                              n_chroma: int = 12) -> np.ndarray:
-    """
-    Compute chroma features (12-bin pitch class energy distribution).
-    """
+    """Compute chroma features (12-bin pitch class energy distribution)."""
     if len(signal) < nfft:
         return np.zeros((1, n_chroma), dtype=np.float32)
 
@@ -329,10 +318,8 @@ def extract_chroma_features(signal: np.ndarray, sr: int = 16000,
     chroma = np.zeros((num_frames, n_chroma), dtype=np.float32)
 
     freqs = np.fft.rfftfreq(nfft, d=1.0 / sr)
-    # Map frequencies to chroma bins
-    # Reference: A4 = 440 Hz
     nonzero_freqs = freqs.copy()
-    nonzero_freqs[0] = 1e-6  # Avoid log(0)
+    nonzero_freqs[0] = 1e-6
     chroma_map = np.round(12 * np.log2(nonzero_freqs / 440.0)) % 12
     chroma_map = chroma_map.astype(int)
 
@@ -345,7 +332,6 @@ def extract_chroma_features(signal: np.ndarray, sr: int = 16000,
             mask = chroma_map == c
             chroma[i, c] = np.sum(magnitude[mask])
 
-        # Normalize
         total = np.sum(chroma[i])
         if total > 0:
             chroma[i] /= total
@@ -354,9 +340,7 @@ def extract_chroma_features(signal: np.ndarray, sr: int = 16000,
 
 
 def extract_pitch_features(signal: np.ndarray, sr: int = 16000) -> dict:
-    """
-    Extract pitch-related features: F0, pitch variance, jitter, shimmer.
-    """
+    """Extract pitch-related features: F0, pitch variance, jitter, shimmer."""
     frame_len = int(0.025 * sr)
     frame_step = int(0.010 * sr)
 
@@ -370,8 +354,8 @@ def extract_pitch_features(signal: np.ndarray, sr: int = 16000) -> dict:
         }
 
     num_frames = 1 + (len(signal) - frame_len) // frame_step
-    min_lag = int(sr / 350)  # Max F0 = 350 Hz
-    max_lag = int(sr / 60)   # Min F0 = 60 Hz
+    min_lag = int(sr / 350)
+    max_lag = int(sr / 60)
 
     pitches = []
     periods = []
@@ -395,7 +379,6 @@ def extract_pitch_features(signal: np.ndarray, sr: int = 16000) -> dict:
 
     valid_pitches = np.array(pitches) if pitches else np.array([0.0])
 
-    # Jitter (period perturbation)
     if len(periods) > 1:
         diff_periods = np.abs(np.diff(periods))
         mean_period = np.mean(periods)
@@ -403,7 +386,6 @@ def extract_pitch_features(signal: np.ndarray, sr: int = 16000) -> dict:
     else:
         jitter = 0.0
 
-    # Shimmer (amplitude perturbation)
     if len(amplitudes) > 1:
         diff_amps = np.abs(np.diff(amplitudes))
         mean_amp = np.mean(amplitudes)
@@ -420,6 +402,64 @@ def extract_pitch_features(signal: np.ndarray, sr: int = 16000) -> dict:
     }
 
 
+def extract_spectral_contrast(signal: np.ndarray, sr: int = 16000,
+                              nfft: int = 512, hop: int = 160,
+                              n_bands: int = 6) -> np.ndarray:
+    """Compute spectral contrast (difference between peaks and valleys in bands)."""
+    if len(signal) < nfft:
+        return np.zeros((1, n_bands), dtype=np.float32)
+
+    num_frames = 1 + (len(signal) - nfft) // hop
+    freqs = np.fft.rfftfreq(nfft, d=1.0 / sr)
+    band_limits = np.logspace(np.log10(100), np.log10(sr / 2), n_bands + 1)
+    
+    contrast = np.zeros((num_frames, n_bands))
+    for i in range(num_frames):
+        frame = signal[i * hop: i * hop + nfft]
+        frame = frame * np.hamming(nfft)
+        magnitude = np.abs(np.fft.rfft(frame))
+        
+        for b in range(n_bands):
+            mask = (freqs >= band_limits[b]) & (freqs < band_limits[b+1])
+            if np.sum(mask) > 0:
+                vals = magnitude[mask]
+                peak = np.percentile(vals, 95)
+                valley = np.percentile(vals, 5)
+                contrast[i, b] = np.log10(peak + 1e-8) - np.log10(valley + 1e-8)
+            else:
+                contrast[i, b] = 0.0
+    return contrast
+
+
+def extract_spectral_rolloff(signal: np.ndarray, sr: int = 16000,
+                              nfft: int = 512, hop: int = 160,
+                              roll_percent: float = 0.85) -> np.ndarray:
+    """Compute spectral roll-off frequency below which 85% of power lies."""
+    if len(signal) < nfft:
+        return np.array([0.0])
+
+    num_frames = 1 + (len(signal) - nfft) // hop
+    rolloffs = np.zeros(num_frames)
+    freqs = np.fft.rfftfreq(nfft, d=1.0 / sr)
+
+    for i in range(num_frames):
+        frame = signal[i * hop: i * hop + nfft]
+        frame = frame * np.hamming(nfft)
+        magnitude = np.abs(np.fft.rfft(frame))
+        total_energy = np.sum(magnitude)
+        if total_energy > 0:
+            cum_energy = np.cumsum(magnitude)
+            threshold = roll_percent * total_energy
+            idx = np.where(cum_energy >= threshold)[0]
+            if len(idx) > 0:
+                rolloffs[i] = freqs[idx[0]]
+            else:
+                rolloffs[i] = 0.0
+        else:
+            rolloffs[i] = 0.0
+    return rolloffs
+
+
 # ─────────────────────────────────────────────
 # Combined Feature Vector Extraction
 # ─────────────────────────────────────────────
@@ -427,56 +467,41 @@ def extract_pitch_features(signal: np.ndarray, sr: int = 16000) -> dict:
 def extract_all_features(signal: np.ndarray, sr: int = 16000) -> np.ndarray:
     """
     Extract a complete feature vector from an audio signal.
-    Returns a 1D numpy array of fixed length suitable for ML model input.
-
-    Feature breakdown (total = 42 features):
-      - MFCC stats (mean + std of 13 coefficients) = 26
-      - Spectral Centroid (mean, std) = 2
-      - Spectral Bandwidth (mean, std) = 2
-      - Zero Crossing Rate (mean, std) = 2
-      - RMS Energy (mean, std) = 2
-      - Chroma Features (mean of 12 bins) = 12  (reduced from 24 for simplicity -> actually 12 means)
-      - Pitch Features (mean, var, range, jitter, shimmer) = 5
-
-    Total: 26 + 2 + 2 + 2 + 2 + 5 + 5 = 44 (with chroma mean/std we get slightly more)
-    We'll do 26 + 2 + 2 + 2 + 2 + 12 + 5 = 51 features
+    Returns a 1D numpy array of fixed length (69 features) suitable for ML model input.
     """
     if len(signal) == 0:
-        return np.zeros(51, dtype=np.float32)
+        return np.zeros(69, dtype=np.float32)
 
     features = []
 
     # 1. MFCC (13 coefficients): mean + std = 26 features
     mfcc = extract_mfcc(signal, sr)
-    mfcc_mean = np.mean(mfcc, axis=0)
-    mfcc_std = np.std(mfcc, axis=0)
-    features.extend(mfcc_mean)
-    features.extend(mfcc_std)
+    features.extend(np.mean(mfcc, axis=0))
+    features.extend(np.std(mfcc, axis=0))
 
     # 2. Spectral Centroid: mean + std = 2 features
     centroid = extract_spectral_centroid(signal, sr)
-    features.append(np.mean(centroid))
-    features.append(np.std(centroid))
+    features.append(float(np.mean(centroid)))
+    features.append(float(np.std(centroid)))
 
     # 3. Spectral Bandwidth: mean + std = 2 features
     bandwidth = extract_spectral_bandwidth(signal, sr)
-    features.append(np.mean(bandwidth))
-    features.append(np.std(bandwidth))
+    features.append(float(np.mean(bandwidth)))
+    features.append(float(np.std(bandwidth)))
 
     # 4. Zero Crossing Rate: mean + std = 2 features
     zcr = extract_zero_crossing_rate(signal)
-    features.append(np.mean(zcr))
-    features.append(np.std(zcr))
+    features.append(float(np.mean(zcr)))
+    features.append(float(np.std(zcr)))
 
     # 5. RMS Energy: mean + std = 2 features
     rms = extract_rms_energy(signal)
-    features.append(np.mean(rms))
-    features.append(np.std(rms))
+    features.append(float(np.mean(rms)))
+    features.append(float(np.std(rms)))
 
     # 6. Chroma: mean of 12 bins = 12 features
     chroma = extract_chroma_features(signal, sr)
-    chroma_mean = np.mean(chroma, axis=0)
-    features.extend(chroma_mean)
+    features.extend(np.mean(chroma, axis=0))
 
     # 7. Pitch: 5 features
     pitch = extract_pitch_features(signal, sr)
@@ -486,6 +511,55 @@ def extract_all_features(signal: np.ndarray, sr: int = 16000) -> np.ndarray:
     features.append(pitch["jitter"])
     features.append(pitch["shimmer"])
 
+    # 8. Spectral Contrast (6 bands): mean + std = 12 features
+    contrast = extract_spectral_contrast(signal, sr)
+    features.extend(np.mean(contrast, axis=0))
+    features.extend(np.std(contrast, axis=0))
+
+    # 9. Spectral Roll-off: mean + std = 2 features
+    rolloff = extract_spectral_rolloff(signal, sr)
+    features.append(float(np.mean(rolloff)))
+    features.append(float(np.std(rolloff)))
+
+    # 10. Voice Stability = 1 feature
+    stability = 1.0 / (1.0 + pitch["jitter"] * 6.0 + pitch["shimmer"] * 3.0 + (pitch["pitch_variance"] / 2000.0))
+    voice_stability = float(np.clip(stability, 0.0, 1.0))
+    features.append(voice_stability)
+
+    # 11. Prosody score = 1 feature
+    prosody_score = float(pitch["pitch_variance"] / (pitch["pitch_mean"] ** 2 + 1e-5))
+    features.append(prosody_score)
+
+    # 12 & 13. Speaking Rate & Pause Analysis = 2 features
+    frame_len = 400
+    hop = 160
+    num_frames = max(1, 1 + (len(signal) - frame_len) // hop)
+    energies = np.zeros(num_frames)
+    if len(signal) >= frame_len:
+        for i in range(num_frames):
+            frame = signal[i * hop: i * hop + frame_len]
+            energies[i] = np.sum(frame ** 2)
+    mean_energy = np.mean(energies)
+    silence_threshold = 0.05 * mean_energy if mean_energy > 0 else 0.0001
+    silent_frames = energies < silence_threshold
+    pause_frequency = float(np.mean(silent_frames))
+    
+    energy_peaks = 0
+    in_peak = False
+    for i, e in enumerate(energies):
+        if e > mean_energy and not silent_frames[i]:
+            if not in_peak:
+                energy_peaks += 1
+                in_peak = True
+        else:
+            in_peak = False
+    duration_s = len(signal) / sr
+    speaking_rate = float(energy_peaks / duration_s) if duration_s > 0 else 0.0
+    
+    features.append(speaking_rate)
+    features.append(pause_frequency)
+
+    # Total feature count = 26 + 2 + 2 + 2 + 2 + 12 + 5 + 12 + 2 + 1 + 1 + 1 + 1 = 69 features
     return np.array(features, dtype=np.float32)
 
 
@@ -503,26 +577,10 @@ def extract_features_from_bytes(file_bytes: bytes) -> np.ndarray:
     return extract_all_features(signal, sr)
 
 
-# ─────────────────────────────────────────────
-# Testing / CLI
-# ─────────────────────────────────────────────
-
 if __name__ == "__main__":
-    import sys
-    if len(sys.argv) > 1:
-        fpath = sys.argv[1]
-        if os.path.exists(fpath):
-            feats = extract_features_from_file(fpath)
-            print(f"Feature vector shape: {feats.shape}")
-            print(f"Feature vector: {feats}")
-        else:
-            print(f"File not found: {fpath}")
-    else:
-        # Generate a test signal (440 Hz sine wave)
-        sr = 16000
-        duration = 2.0
-        t = np.linspace(0, duration, int(sr * duration), endpoint=False)
-        test_signal = 0.5 * np.sin(2 * np.pi * 440 * t).astype(np.float32)
-        feats = extract_all_features(test_signal, sr)
-        print(f"Test feature vector shape: {feats.shape}")
-        print(f"Feature vector: {feats}")
+    sr = 16000
+    duration = 2.0
+    t = np.linspace(0, duration, int(sr * duration), endpoint=False)
+    test_signal = 0.5 * np.sin(2 * np.pi * 440 * t).astype(np.float32)
+    feats = extract_all_features(test_signal, sr)
+    print(f"Test feature vector shape: {feats.shape} (Expected: (69,))")

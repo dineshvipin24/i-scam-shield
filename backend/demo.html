@@ -766,6 +766,15 @@
                                                 <div>
                                                     <div class="text-[10px] text-slate-500 uppercase tracking-wide">Classification</div>
                                                     <div class="text-sm font-bold mt-0.5">{voiceClass}</div>
+                                                    {voiceAIProb > 90 ? (
+                                                        <div class="p-2 mt-2 bg-red-950/80 border border-red-500 text-red-400 rounded-lg text-[10px] font-bold text-center animate-pulse">
+                                                            🚨 High Confidence AI Voice Detected
+                                                        </div>
+                                                    ) : voiceAIProb > 70 ? (
+                                                        <div class="p-2 mt-2 bg-amber-950/80 border border-amber-500 text-amber-400 rounded-lg text-[10px] font-bold text-center">
+                                                            ⚠ AI-Generated Voice Detected
+                                                        </div>
+                                                    ) : null}
                                                 </div>
                                                 <span class={`px-2.5 py-1 rounded-lg text-xs font-bold ${getVoiceBadge(voiceClass)}`}>
                                                     {voiceConfidence}% Conf.

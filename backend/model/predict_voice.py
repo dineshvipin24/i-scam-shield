@@ -56,7 +56,7 @@ class VoicePredictor:
         self.model = None
         self.scaler = None
         self.model_name = "Heuristic"
-        self.feature_count = 51
+        self.feature_count = 69
         self.model_loaded = False
 
         # Try loading trained model
@@ -67,7 +67,7 @@ class VoicePredictor:
 
                 self.model = model_data['model']
                 self.model_name = model_data.get('model_name', 'Unknown')
-                self.feature_count = model_data.get('feature_count', 51)
+                self.feature_count = model_data.get('feature_count', 69)
                 self.model_loaded = True
                 print(f"[VoicePredictor] Loaded {self.model_name} model "
                       f"(F1: {model_data.get('f1_score', 'N/A')}, "
