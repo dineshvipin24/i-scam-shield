@@ -120,6 +120,13 @@
             const [alertShown, setAlertShown] = useState(false);
             const recognitionRef = useRef(null);
 
+            // Live Mic Voice States
+            const [micVoiceAnalysis, setMicVoiceAnalysis] = useState(null);
+            const [micCombinedScore, setMicCombinedScore] = useState(0);
+            const mediaRecorderRef = useRef(null);
+            const voiceIntervalRef = useRef(null);
+            const voiceStreamRef = useRef(null);
+
             // High Risk Siren Alarm System
             const alarmTimerRef = useRef(null);
             const alarmStopTimeoutRef = useRef(null);
@@ -288,6 +295,83 @@
                     });
             };
 
+            const sendVoiceChunk = (blob) => {
+                const formData = new FormData();
+                formData.append('file', blob, 'mic_chunk.webm');
+
+                fetch('/api/analyze-complete', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.voice_analysis) {
+                            setMicVoiceAnalysis(data.voice_analysis);
+                            const combined = data.combined_analysis ? data.combined_analysis.combined_threat_score : data.voice_analysis.ai_voice_score;
+                            setMicCombinedScore(combined);
+
+                            // Trigger alarms if live combined score is high!
+                            if (combined >= 100) {
+                                stopListening();
+                                stopHighRiskAlarm();
+                                setIsCallTerminated(true);
+                                playBeep(400, 0.5, 3, 200);
+                            } else if (combined >= 70) {
+                                triggerHighRiskAlarm();
+                            }
+                        }
+                    })
+                    .catch(err => console.error("Error analyzing live voice chunk:", err));
+            };
+
+            const startVoiceMonitoring = async () => {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    voiceStreamRef.current = stream;
+
+                    const recordNextChunk = () => {
+                        if (!voiceStreamRef.current) return;
+
+                        const recorder = new MediaRecorder(voiceStreamRef.current);
+                        mediaRecorderRef.current = recorder;
+                        let chunks = [];
+
+                        recorder.ondataavailable = (e) => {
+                            if (e.data.size > 0) {
+                                chunks.push(e.data);
+                            }
+                        };
+
+                        recorder.onstop = () => {
+                            if (chunks.length > 0) {
+                                const blob = new Blob(chunks, { type: 'audio/webm' });
+                                sendVoiceChunk(blob);
+                            }
+                        };
+
+                        recorder.start();
+
+                        // Stop after 4 seconds to trigger onstop and process
+                        setTimeout(() => {
+                            if (recorder.state !== 'inactive') {
+                                recorder.stop();
+                            }
+                        }, 4000);
+                    };
+
+                    // Initial call
+                    recordNextChunk();
+
+                    // Repeat every 4.5 seconds
+                    voiceIntervalRef.current = setInterval(() => {
+                        recordNextChunk();
+                    }, 4500);
+
+                } catch (err) {
+                    console.error("Microphone recording for AI voice detection failed:", err);
+                }
+            };
+
             // Live Mic Logic
             const toggleMic = () => {
                 initAudioContext();
@@ -319,6 +403,9 @@
                     setMicCategory('Safe Call');
                     setAlertShown(false);
                     setIsCallTerminated(false);
+                    setMicVoiceAnalysis(null);
+                    setMicCombinedScore(0);
+                    startVoiceMonitoring();
                 };
 
                 rec.onresult = (event) => {
@@ -377,6 +464,20 @@
                     recognitionRef.current.stop();
                     recognitionRef.current = null;
                 }
+                // Stop voice monitoring
+                if (voiceIntervalRef.current) {
+                    clearInterval(voiceIntervalRef.current);
+                    voiceIntervalRef.current = null;
+                }
+                if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+                    try {
+                        mediaRecorderRef.current.stop();
+                    } catch (e) {}
+                }
+                if (voiceStreamRef.current) {
+                    voiceStreamRef.current.getTracks().forEach(track => track.stop());
+                    voiceStreamRef.current = null;
+                }
             };
 
             // Non-critical medium risk background chime logic
@@ -396,25 +497,25 @@
             }, [isListening, micRiskScore, activeTab]);
 
             // Normalized Analysis Mapping
-            const isAudioAnalysis = !!analysisResult?.combined_analysis;
+            const isAudioAnalysis = activeTab === 'live' ? !!micVoiceAnalysis : !!analysisResult?.combined_analysis;
 
-            const scamScore = isAudioAnalysis ? analysisResult.scam_analysis.risk_score : (analysisResult?.risk_score || 0);
-            const scamRiskLevel = isAudioAnalysis ? analysisResult.scam_analysis.risk_level : (analysisResult?.risk_level || 'SAFE');
-            const scamCategory = isAudioAnalysis ? analysisResult.scam_analysis.fraud_category : (analysisResult?.fraud_category || 'Safe Call');
-            const scamEvidence = isAudioAnalysis ? analysisResult.scam_analysis.evidence_report : (analysisResult?.evidence_report || '');
-            const scamKeywords = isAudioAnalysis ? analysisResult.scam_analysis.detected_keywords : (analysisResult?.detected_keywords || []);
-            const scamTranscript = isAudioAnalysis ? analysisResult.scam_analysis.transcript : (analysisResult?.transcript || '');
+            const scamScore = activeTab === 'live' ? micRiskScore : (isAudioAnalysis ? analysisResult.scam_analysis.risk_score : (analysisResult?.risk_score || 0));
+            const scamRiskLevel = activeTab === 'live' ? micRiskLevel : (isAudioAnalysis ? analysisResult.scam_analysis.risk_level : (analysisResult?.risk_level || 'SAFE'));
+            const scamCategory = activeTab === 'live' ? micCategory : (isAudioAnalysis ? analysisResult.scam_analysis.fraud_category : (analysisResult?.fraud_category || 'Safe Call'));
+            const scamEvidence = activeTab === 'live' ? micKeywords.join(', ') : (isAudioAnalysis ? analysisResult.scam_analysis.evidence_report : (analysisResult?.evidence_report || ''));
+            const scamKeywords = activeTab === 'live' ? micKeywords : (isAudioAnalysis ? analysisResult.scam_analysis.detected_keywords : (analysisResult?.detected_keywords || []));
+            const scamTranscript = activeTab === 'live' ? micTranscript.join(' ') : (isAudioAnalysis ? analysisResult.scam_analysis.transcript : (analysisResult?.transcript || ''));
 
-            const voiceScore = isAudioAnalysis ? analysisResult.voice_analysis.ai_voice_score : 0;
-            const voiceClass = isAudioAnalysis ? analysisResult.voice_analysis.voice_classification : 'Uncertain';
-            const voiceConfidence = isAudioAnalysis ? analysisResult.voice_analysis.confidence_score : 0;
-            const voiceHumanProb = isAudioAnalysis ? analysisResult.voice_analysis.human_voice_probability : 100;
-            const voiceAIProb = isAudioAnalysis ? analysisResult.voice_analysis.ai_voice_probability : 0;
-            const voiceFeatures = isAudioAnalysis ? analysisResult.voice_analysis.features : null;
-            const voiceReasoning = isAudioAnalysis ? analysisResult.voice_analysis.reasoning : '';
+            const voiceScore = activeTab === 'live' ? (micVoiceAnalysis ? micVoiceAnalysis.ai_voice_score : 0) : (isAudioAnalysis ? analysisResult.voice_analysis.ai_voice_score : 0);
+            const voiceClass = activeTab === 'live' ? (micVoiceAnalysis ? micVoiceAnalysis.voice_classification : 'Uncertain') : (isAudioAnalysis ? analysisResult.voice_analysis.voice_classification : 'Uncertain');
+            const voiceConfidence = activeTab === 'live' ? (micVoiceAnalysis ? micVoiceAnalysis.confidence_score : 0) : (isAudioAnalysis ? analysisResult.voice_analysis.confidence_score : 0);
+            const voiceHumanProb = activeTab === 'live' ? (micVoiceAnalysis ? micVoiceAnalysis.human_voice_probability : 100) : (isAudioAnalysis ? analysisResult.voice_analysis.human_voice_probability : 100);
+            const voiceAIProb = activeTab === 'live' ? (micVoiceAnalysis ? micVoiceAnalysis.ai_voice_probability : 0) : (isAudioAnalysis ? analysisResult.voice_analysis.ai_voice_probability : 0);
+            const voiceFeatures = activeTab === 'live' ? (micVoiceAnalysis ? micVoiceAnalysis.features : null) : (isAudioAnalysis ? analysisResult.voice_analysis.features : null);
+            const voiceReasoning = activeTab === 'live' ? (micVoiceAnalysis ? micVoiceAnalysis.reasoning : '') : (isAudioAnalysis ? analysisResult.voice_analysis.reasoning : '');
 
-            const combinedScore = isAudioAnalysis ? analysisResult.combined_analysis.combined_threat_score : scamScore;
-            const combinedRiskLevel = isAudioAnalysis ? analysisResult.combined_analysis.combined_risk_level : scamRiskLevel;
+            const combinedScore = activeTab === 'live' ? (micVoiceAnalysis ? micCombinedScore : micRiskScore) : (isAudioAnalysis ? analysisResult.combined_analysis.combined_threat_score : scamScore);
+            const combinedRiskLevel = activeTab === 'live' ? (combinedScore >= 61 ? 'HIGH' : combinedScore >= 31 ? 'MEDIUM' : 'SAFE') : (isAudioAnalysis ? analysisResult.combined_analysis.combined_risk_level : scamRiskLevel);
 
             // Color Class helpers
             const getRiskColorClass = (score) => {
@@ -696,7 +797,7 @@
                         <div class="lg:col-span-5 flex flex-col gap-6">
 
                             {/* Threat Evaluation Report */}
-                            {((activeTab === 'live' && isListening) || (activeTab !== 'live' && analysisResult)) ? (
+                            {((activeTab === 'live' && (isListening || micRiskScore > 0 || !!micVoiceAnalysis)) || (activeTab !== 'live' && analysisResult)) ? (
                                 <div class="flex flex-col gap-6">
 
                                     {/* Combined Threat Summary (for Audio Uploads) */}
