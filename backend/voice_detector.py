@@ -335,8 +335,8 @@ def extract_acoustic_features(signal: np.ndarray, sr: int = 16000) -> dict:
         if len(corr) > max_lag and corr[0] > 0:
             peak = np.max(corr[min_lag:max_lag])
             noise = corr[0] - peak
-            if noise > 0:
-                hnr_values.append(10 * np.log10(peak / noise))
+            if noise > 1e-9 and peak > 0:
+                hnr_values.append(10 * np.log10(max(1e-9, peak) / max(1e-9, noise)))
     hnr = float(np.mean(hnr_values)) if hnr_values else 0.0
 
     # --- Harmonic Regularity ---
@@ -372,7 +372,7 @@ def extract_acoustic_features(signal: np.ndarray, sr: int = 16000) -> dict:
     else:
         micro_modulation = 0.0
 
-    return {
+    ret = {
         "pitch_variance": round(pitch_variance, 2),
         "speaking_rate": round(speaking_rate, 2),
         "pause_frequency": round(pause_frequency, 2),
@@ -391,6 +391,10 @@ def extract_acoustic_features(signal: np.ndarray, sr: int = 16000) -> dict:
         "micro_modulation": round(micro_modulation, 4),
         "hnr": round(hnr, 2)
     }
+    for k, v in ret.items():
+        if np.isnan(v) or np.isinf(v):
+            ret[k] = 0.0
+    return ret
 
 
 def classify_voice_from_features(features: dict) -> tuple[float, str, float]:
@@ -517,6 +521,33 @@ def classify_voice_from_features(features: dict) -> tuple[float, str, float]:
     return round(ai_score, 1), classification, round(confidence, 1)
 
 
+def sanitize_dict_floats(d: dict) -> dict:
+    """Recursively replaces NaN, inf, and -inf float values in a dictionary with safe values (0.0)."""
+    sanitized = {}
+    for k, v in d.items():
+        if isinstance(v, dict):
+            sanitized[k] = sanitize_dict_floats(v)
+        elif isinstance(v, (float, np.float32, np.float64)):
+            if np.isnan(v) or np.isinf(v):
+                sanitized[k] = 0.0
+            else:
+                sanitized[k] = float(v)
+        elif isinstance(v, list):
+            sanitized_list = []
+            for item in v:
+                if isinstance(item, (float, np.float32, np.float64)):
+                    if np.isnan(item) or np.isinf(item):
+                        sanitized_list.append(0.0)
+                    else:
+                        sanitized_list.append(float(item))
+                else:
+                    sanitized_list.append(item)
+            sanitized[k] = sanitized_list
+        else:
+            sanitized[k] = v
+    return sanitized
+
+
 class AIVoiceDetector:
     def __init__(self):
         # Priority chain: ML Model (pkl) → PyTorch → Heuristic
@@ -573,7 +604,7 @@ class AIVoiceDetector:
         pcm_bytes = decode_audio_to_pcm(file_bytes)
         if not pcm_bytes:
             # Fallback for empty or corrupt audio
-            return {
+            result = {
                 "ai_voice_score": 0.0,
                 "risk_level": "Likely Human",
                 "voice_classification": "Likely Human",
@@ -583,6 +614,7 @@ class AIVoiceDetector:
                 "features": extract_acoustic_features(np.zeros(0)),
                 "reasoning": "Could not extract audio features. Defaulting to safe human classification."
             }
+            return sanitize_dict_floats(result)
 
         signal = np.frombuffer(pcm_bytes, dtype=np.int16).astype(np.float32) / 32768.0
         features = extract_acoustic_features(signal, sr=16000)
@@ -664,7 +696,7 @@ class AIVoiceDetector:
 
         reasoning = " ".join(reasons)
 
-        return {
+        result = {
             "ai_voice_score": ai_score,
             "risk_level": "Likely AI Generated" if ai_score >= 55 else ("Uncertain" if ai_score >= 30 else "Likely Human"),
             "voice_classification": classification,
@@ -674,6 +706,7 @@ class AIVoiceDetector:
             "features": features,
             "reasoning": reasoning
         }
+        return sanitize_dict_floats(result)
 
     def _fallback_classify(self, file_bytes, pcm_bytes, signal, features):
         """Fallback classification chain: PyTorch → Heuristic"""

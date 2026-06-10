@@ -560,7 +560,7 @@ def extract_all_features(signal: np.ndarray, sr: int = 16000) -> np.ndarray:
     features.append(pause_frequency)
 
     # Total feature count = 26 + 2 + 2 + 2 + 2 + 12 + 5 + 12 + 2 + 1 + 1 + 1 + 1 = 69 features
-    return np.array(features, dtype=np.float32)
+    return np.nan_to_num(np.array(features, dtype=np.float32), nan=0.0, posinf=0.0, neginf=0.0)
 
 
 def extract_features_from_file(file_path: str) -> np.ndarray:
