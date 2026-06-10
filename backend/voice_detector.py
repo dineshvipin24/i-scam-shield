@@ -23,10 +23,12 @@ except ImportError:
 def decode_audio_to_pcm(file_bytes: bytes) -> bytes:
     """
     Decode audio of any container format (WAV, MP3, M4A, etc.) to 16kHz, 16-bit mono PCM.
+    Uses multiple fallback strategies to ensure MP3/M4A files are decoded.
     """
     if not file_bytes:
         return b""
-        
+
+    # Strategy 1: PyAV (handles all formats if installed)
     if AV_AVAILABLE:
         try:
             input_file = io.BytesIO(file_bytes)
@@ -47,27 +49,100 @@ def decode_audio_to_pcm(file_bytes: bytes) -> bytes:
                 resampled_frames = resampler.resample(frame)
                 for rf in resampled_frames:
                     pcm_data.extend(rf.planes[0].to_ndarray().tobytes())
-            return bytes(pcm_data)
+            if len(pcm_data) > 0:
+                print(f"[Audio Decode] PyAV success: {len(pcm_data)} bytes PCM")
+                return bytes(pcm_data)
+            else:
+                raise ValueError("PyAV returned empty audio")
         except Exception as e:
-            print(f"[Audio Decoding Warning] PyAV failed: {e}. Falling back to wave parser...")
-            
-    # Fallback to standard wave library if it is a WAV file
+            print(f"[Audio Decode] PyAV failed: {e}. Trying next decoder...")
+
+    # Strategy 2: soundfile (handles WAV, FLAC, OGG; limited MP3 support)
+    try:
+        import soundfile as sf
+        audio_io = io.BytesIO(file_bytes)
+        data, samplerate = sf.read(audio_io, dtype='int16')
+        if len(data.shape) > 1:
+            data = data.mean(axis=1).astype(np.int16)
+        if samplerate != 16000:
+            duration = len(data) / samplerate
+            new_len = int(duration * 16000)
+            data = np.interp(
+                np.linspace(0, len(data) - 1, new_len),
+                np.arange(len(data)), data
+            ).astype(np.int16)
+        if len(data) > 0:
+            print(f"[Audio Decode] soundfile success: {len(data)*2} bytes PCM")
+            return data.tobytes()
+    except Exception as e:
+        print(f"[Audio Decode] soundfile failed: {e}. Trying next decoder...")
+
+    # Strategy 3: ffmpeg subprocess (universal decoder)
+    try:
+        import subprocess
+        import sys
+        import tempfile
+
+        # Write input to temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.audio') as tmp_in:
+            tmp_in.write(file_bytes)
+            tmp_in_path = tmp_in.name
+
+        tmp_out_path = tmp_in_path + '.wav'
+
+        try:
+            # Try ffmpeg
+            result = subprocess.run(
+                ['ffmpeg', '-y', '-i', tmp_in_path,
+                 '-ar', '16000', '-ac', '1', '-f', 's16le', '-acodec', 'pcm_s16le',
+                 tmp_out_path],
+                capture_output=True, timeout=30
+            )
+            if result.returncode == 0 and os.path.exists(tmp_out_path):
+                with open(tmp_out_path, 'rb') as f:
+                    pcm_data = f.read()
+                if len(pcm_data) > 0:
+                    print(f"[Audio Decode] ffmpeg success: {len(pcm_data)} bytes PCM")
+                    return pcm_data
+        except FileNotFoundError:
+            print("[Audio Decode] ffmpeg not found. Trying next decoder...")
+        except Exception as e:
+            print(f"[Audio Decode] ffmpeg error: {e}")
+        finally:
+            for p in [tmp_in_path, tmp_out_path]:
+                try:
+                    if os.path.exists(p):
+                        os.remove(p)
+                except:
+                    pass
+    except Exception as e:
+        print(f"[Audio Decode] ffmpeg strategy failed: {e}")
+
+    # Strategy 4: pydub (if installed, handles MP3 natively)
+    try:
+        from pydub import AudioSegment
+        audio = AudioSegment.from_file(io.BytesIO(file_bytes))
+        audio = audio.set_frame_rate(16000).set_channels(1).set_sample_width(2)
+        pcm_data = audio.raw_data
+        if len(pcm_data) > 0:
+            print(f"[Audio Decode] pydub success: {len(pcm_data)} bytes PCM")
+            return pcm_data
+    except Exception as e:
+        print(f"[Audio Decode] pydub failed: {e}. Trying wave fallback...")
+
+    # Strategy 5: Standard wave library (WAV only)
     try:
         with wave.open(io.BytesIO(file_bytes), 'rb') as wav:
             params = wav.getparams()
             raw = wav.readframes(params.nframes)
             
-            # If already 16kHz 16-bit mono
             if params.framerate == 16000 and params.sampwidth == 2 and params.nchannels == 1:
                 return raw
                 
-            # If different sample rate/channels, convert it simply
             signal = np.frombuffer(raw, dtype=np.int16)
             if params.nchannels > 1:
-                # Average channels
                 signal = signal.reshape(-1, params.nchannels).mean(axis=1).astype(np.int16)
                 
-            # Resample if needed using basic linear interpolation
             if params.framerate != 16000:
                 duration = len(signal) / params.framerate
                 new_len = int(duration * 16000)
@@ -79,8 +154,22 @@ def decode_audio_to_pcm(file_bytes: bytes) -> bytes:
                 
             return signal.tobytes()
     except Exception as ex:
-        print(f"[Audio Decoding Error] Fallback wave decoder failed: {ex}")
-        return b""
+        print(f"[Audio Decode] Wave decoder failed: {ex}")
+
+    # Strategy 6: Raw byte interpretation as last resort
+    # If file starts with RIFF header, try to parse manually
+    if file_bytes[:4] == b'RIFF':
+        try:
+            # Skip WAV header (typically 44 bytes) and treat rest as PCM
+            pcm_data = file_bytes[44:]
+            if len(pcm_data) > 1000:
+                print(f"[Audio Decode] Raw RIFF fallback: {len(pcm_data)} bytes")
+                return pcm_data
+        except:
+            pass
+
+    print("[Audio Decode] ALL DECODERS FAILED. Returning empty audio.")
+    return b""
 
 
 def extract_acoustic_features(signal: np.ndarray, sr: int = 16000) -> dict:
@@ -295,10 +384,24 @@ def classify_voice_from_features(features: dict) -> tuple[float, str, float]:
 
 class AIVoiceDetector:
     def __init__(self):
-        # We try to load PyTorch engine if available and stable
+        # Priority chain: ML Model (pkl) → PyTorch → Heuristic
+        self.ml_predictor = None
+        self.ml_loaded = False
         self.pytorch_loaded = False
         self.pytorch_detector = None
-        
+
+        # 1. Try loading trained ML model (Random Forest / XGBoost / LightGBM)
+        try:
+            from model.predict_voice import VoicePredictor
+            self.ml_predictor = VoicePredictor()
+            if self.ml_predictor.model_loaded:
+                self.ml_loaded = True
+                print(f"[AIVoiceDetector] ✅ ML model loaded: {self.ml_predictor.model_name}")
+        except Exception as e:
+            print(f"[AIVoiceDetector] ML model not available: {e}")
+            self.ml_predictor = None
+
+        # 2. Try PyTorch engine as secondary classifier
         if self._check_safe("torch"):
             try:
                 from model.deepfake_classifier import DeepfakeInference
@@ -310,6 +413,14 @@ class AIVoiceDetector:
                 self.pytorch_detector = None
         else:
             print("[AIVoiceDetector] PyTorch is unavailable or unstable on this system. Bypassing PyTorch detector.")
+
+        # Log detection strategy
+        if self.ml_loaded:
+            print("[AIVoiceDetector] Strategy: ML Model (primary) → Heuristic (fallback)")
+        elif self.pytorch_loaded:
+            print("[AIVoiceDetector] Strategy: PyTorch (primary) → Heuristic (fallback)")
+        else:
+            print("[AIVoiceDetector] Strategy: Heuristic only (no trained models available)")
 
     def _check_safe(self, module_name: str) -> bool:
         import subprocess
@@ -347,27 +458,35 @@ class AIVoiceDetector:
         signal = np.frombuffer(pcm_bytes, dtype=np.int16).astype(np.float32) / 32768.0
         features = extract_acoustic_features(signal, sr=16000)
 
-        # 1. Run classifier
-        if self.pytorch_loaded:
+        # === Classification Priority Chain ===
+
+        # 1. Try ML Model (trained sklearn/xgboost)
+        if self.ml_loaded and self.ml_predictor is not None:
             try:
-                raw_score = self.pytorch_detector.predict_pcm(pcm_bytes)
-                ai_score = round(raw_score * 100.0, 1)
-                
-                # Classify based on score
-                if ai_score >= 61:
+                ml_result = self.ml_predictor.predict_bytes(file_bytes)
+                ai_prob_raw = ml_result["ai_probability"]
+                ai_score = round(ai_prob_raw * 100.0, 1)
+                classification = ml_result["prediction"]
+
+                if "AI" in classification:
                     classification = "Likely AI Generated"
-                    confidence = round(50.0 + (ai_score - 60) * 1.2, 1)
-                elif ai_score >= 31:
-                    classification = "Uncertain"
-                    confidence = round(50.0 + (50 - abs(ai_score - 45)) * 0.4, 1)
-                else:
+                elif "Human" in classification:
                     classification = "Likely Human"
-                    confidence = round(50.0 + (30 - ai_score) * 1.5, 1)
+                else:
+                    classification = "Uncertain"
+
+                confidence = ml_result["confidence"]
+                print(f"[AIVoiceDetector] ML prediction: {classification} "
+                      f"(AI={ai_score}%, conf={confidence}%)")
             except Exception as e:
-                print(f"[AIVoiceDetector Warn] PyTorch run failed: {e}. Falling back to features.")
-                ai_score, classification, confidence = classify_voice_from_features(features)
+                print(f"[AIVoiceDetector Warn] ML model failed: {e}. Falling back...")
+                ai_score, classification, confidence = self._fallback_classify(
+                    file_bytes, pcm_bytes, signal, features
+                )
         else:
-            ai_score, classification, confidence = classify_voice_from_features(features)
+            ai_score, classification, confidence = self._fallback_classify(
+                file_bytes, pcm_bytes, signal, features
+            )
 
         # Calculate probabilities
         ai_prob = ai_score
@@ -390,6 +509,14 @@ class AIVoiceDetector:
         else:
             reasons.append("Natural breathing/sighing pauses detected between phrases.")
 
+        # Add model info to reasoning
+        if self.ml_loaded:
+            reasons.append(f"[Analysis by {self.ml_predictor.model_name} ML classifier]")
+        elif self.pytorch_loaded:
+            reasons.append("[Analysis by PyTorch neural network]")
+        else:
+            reasons.append("[Analysis by acoustic heuristic engine]")
+
         reasoning = " ".join(reasons)
 
         return {
@@ -402,3 +529,26 @@ class AIVoiceDetector:
             "features": features,
             "reasoning": reasoning
         }
+
+    def _fallback_classify(self, file_bytes, pcm_bytes, signal, features):
+        """Fallback classification chain: PyTorch → Heuristic"""
+        if self.pytorch_loaded:
+            try:
+                raw_score = self.pytorch_detector.predict_pcm(pcm_bytes)
+                ai_score = round(raw_score * 100.0, 1)
+
+                if ai_score >= 61:
+                    classification = "Likely AI Generated"
+                    confidence = round(50.0 + (ai_score - 60) * 1.2, 1)
+                elif ai_score >= 31:
+                    classification = "Uncertain"
+                    confidence = round(50.0 + (50 - abs(ai_score - 45)) * 0.4, 1)
+                else:
+                    classification = "Likely Human"
+                    confidence = round(50.0 + (30 - ai_score) * 1.5, 1)
+
+                return ai_score, classification, confidence
+            except Exception as e:
+                print(f"[AIVoiceDetector Warn] PyTorch run failed: {e}. Using heuristic.")
+
+        return classify_voice_from_features(features)
