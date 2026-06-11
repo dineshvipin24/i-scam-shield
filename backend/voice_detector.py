@@ -431,57 +431,57 @@ def classify_voice_from_features(features: dict) -> tuple[float, str, float]:
 
     # ──────── NEW AI-CATCHING FEATURES (70 pts max) ────────
 
-    # 4. Spectral Flatness — AI voices are TOO harmonically clean
+    # 4. Spectral Flatness — AI voices are TOO harmonically clean (very robust to noise)
     sf = features.get("spectral_flatness", 0.1)
-    if sf < 0.02:
-        score += 15; evidence.append("very_clean_spectrum")
-    elif sf < 0.06:
-        score += 10; evidence.append("clean_spectrum")
-    elif sf < 0.10:
-        score += 5; evidence.append("moderate_spectrum")
+    if sf < 0.035:
+        score += 25; evidence.append("very_clean_spectrum")
+    elif sf < 0.065:
+        score += 20; evidence.append("clean_spectrum")
+    elif sf < 0.12:
+        score += 12; evidence.append("moderate_spectrum")
 
     # 5. Spectral Flux Consistency — AI has uniform spectral transitions
     sfs = features.get("spectral_flux_std", 1.0)
-    if sfs < 0.3:
-        score += 12; evidence.append("uniform_spectral_flux")
-    elif sfs < 0.6:
-        score += 8; evidence.append("smooth_spectral_flux")
-    elif sfs < 0.9:
-        score += 3; evidence.append("moderate_spectral_flux")
+    if sfs < 0.45:
+        score += 20; evidence.append("uniform_spectral_flux")
+    elif sfs < 0.85:
+        score += 15; evidence.append("smooth_spectral_flux")
+    elif sfs < 1.35:
+        score += 10; evidence.append("moderate_spectral_flux")
 
     # 6. HNR — AI voices are too clean (high HNR)
     hnr = features.get("hnr", 5.0)
-    if hnr > 20:
-        score += 12; evidence.append("very_high_hnr")
-    elif hnr > 12:
-        score += 8; evidence.append("high_hnr")
-    elif hnr > 7:
-        score += 3; evidence.append("moderate_hnr")
+    if hnr > 18:
+        score += 15; evidence.append("very_high_hnr")
+    elif hnr > 11:
+        score += 10; evidence.append("high_hnr")
+    elif hnr > 6.0:
+        score += 5; evidence.append("moderate_hnr")
 
     # 7. Temporal Smoothness — AI envelopes are too smooth
     ts = features.get("temporal_smoothness", 0.3)
-    if ts > 0.85:
-        score += 10; evidence.append("very_smooth_envelope")
-    elif ts > 0.65:
-        score += 6; evidence.append("smooth_envelope")
-    elif ts > 0.45:
-        score += 3; evidence.append("moderate_envelope")
+    if ts > 0.75:
+        score += 15; evidence.append("very_smooth_envelope")
+    elif ts > 0.50:
+        score += 12; evidence.append("smooth_envelope")
+    elif ts > 0.32:
+        score += 8; evidence.append("moderate_envelope")
 
     # 8. Harmonic Regularity — AI has perfectly spaced harmonics
     hr = features.get("harmonic_ratio", 0.5)
-    if hr < 0.08:
-        score += 10; evidence.append("perfect_harmonics")
-    elif hr < 0.18:
-        score += 6; evidence.append("regular_harmonics")
-    elif hr < 0.30:
-        score += 3; evidence.append("moderate_harmonics")
+    if hr < 0.12:
+        score += 15; evidence.append("perfect_harmonics")
+    elif hr < 0.24:
+        score += 12; evidence.append("regular_harmonics")
+    elif hr < 0.35:
+        score += 8; evidence.append("moderate_harmonics")
 
     # 9. Micro-modulation — AI lacks natural micro-amplitude variations
     mm = features.get("micro_modulation", 0.1)
-    if mm < 0.01:
-        score += 8; evidence.append("no_micro_modulation")
-    elif mm < 0.04:
-        score += 5; evidence.append("low_micro_modulation")
+    if mm < 0.02:
+        score += 12; evidence.append("no_micro_modulation")
+    elif mm < 0.075:
+        score += 10; evidence.append("low_micro_modulation")
 
     # 10. Breathing absence — AI rarely generates breathing
     bd = features.get("breathing_detected", 0.03)
@@ -651,7 +651,8 @@ class AIVoiceDetector:
         # === Combine scores: Heuristic model is highly calibrated for real mic physics ===
         if ml_score is not None:
             # Blend ML model (40%) and Heuristic (60%) for high real-world stability
-            ai_score = round(ml_score * 0.40 + heuristic_score * 0.60, 1)
+            blended_score = round(ml_score * 0.40 + heuristic_score * 0.60, 1)
+            ai_score = blended_score
             
             # Ground the ML model prediction using the heuristic baseline:
             # If physical heuristics strongly indicate a real human (score < 15%),
@@ -659,17 +660,20 @@ class AIVoiceDetector:
             # But do NOT cap if individual features show strong indicators of AI synthesis.
             if heuristic_score < 15.0:
                 is_suspicious_ai = (
-                    features.get("spectral_flatness", 1.0) < 0.06 or
-                    features.get("harmonic_ratio", 1.0) < 0.18 or
-                    features.get("temporal_smoothness", 0.0) > 0.65 or
-                    features.get("spectral_flux_std", 1.0) < 0.6 or
-                    features.get("hnr", 0.0) > 12.0 or
-                    features.get("micro_modulation", 1.0) < 0.04 or
+                    features.get("spectral_flatness", 1.0) < 0.12 or
+                    features.get("harmonic_ratio", 1.0) < 0.35 or
+                    features.get("temporal_smoothness", 0.0) > 0.32 or
+                    features.get("spectral_flux_std", 1.0) < 1.35 or
+                    features.get("hnr", 0.0) > 6.0 or
+                    features.get("micro_modulation", 1.0) < 0.075 or
                     features.get("breathing_detected", 1.0) < 0.018 or
                     features.get("prosody_score", 1.0) < 0.08
                 )
                 if not is_suspicious_ai:
-                    ai_score = min(ai_score, round(heuristic_score + 5.0, 1))
+                    ai_score = min(blended_score, round(heuristic_score + 5.0, 1))
+            
+            # Trust the heuristic score as a high-confidence lower bound
+            ai_score = max(heuristic_score, ai_score)
         else:
             ai_score = heuristic_score
 

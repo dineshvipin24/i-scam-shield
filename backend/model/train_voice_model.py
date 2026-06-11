@@ -119,26 +119,26 @@ def simulate_ai_features() -> np.ndarray:
     
     # Centroid mean (26)
     feats[26] = np.random.uniform(1700, 2300)
-    # Centroid std (27)
-    feats[27] = np.random.uniform(80, 280)
+    # Centroid std (27) - AI can have wider variation in noisy environments
+    feats[27] = np.random.uniform(80, 650)
     
     # Bandwidth mean (28)
     feats[28] = np.random.uniform(1200, 1800)
-    # Bandwidth std (29)
-    feats[29] = np.random.uniform(40, 140)
+    # Bandwidth std (29) - AI can have wider variation in noisy environments
+    feats[29] = np.random.uniform(40, 450)
     
     # ZCR mean (30)
     feats[30] = np.random.uniform(0.07, 0.13)
-    # ZCR std (31) - AI ZCR is extremely regular
-    feats[31] = np.random.uniform(0.003, 0.014)
+    # ZCR std (31) - AI ZCR varies more under compression/microphone noise
+    feats[31] = np.random.uniform(0.003, 0.05)
     
     # RMS mean (32)
     feats[32] = np.random.uniform(0.03, 0.11)
-    # RMS std (33)
-    feats[33] = np.random.uniform(0.001, 0.008)
+    # RMS std (33) - AI amplitude envelope can fluctuate under recording noise
+    feats[33] = np.random.uniform(0.001, 0.025)
     
     # Chroma mean (34 to 45) - AI chroma is more uniform
-    feats[34:46] = np.random.normal(0.08, 0.008, size=12)
+    feats[34:46] = np.random.normal(0.08, 0.015, size=12)
     
     # Pitch features (46 to 50)
     feats[46] = np.random.uniform(110, 230)  # Pitch mean

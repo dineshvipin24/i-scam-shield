@@ -1,6 +1,6 @@
 # AI Voice Detection - Training Report
 
-**Generated:** 2026-06-10 23:44:40
+**Generated:** 2026-06-11 11:32:01
 
 **Best Model:** Random Forest
 
@@ -36,30 +36,30 @@
 
 | Rank | Feature Index / Name | Importance Score |
 |------|---------------------|------------------|
-| 1 | rms_std | 0.09147 |
-| 2 | contrast_std_3 | 0.08708 |
-| 3 | contrast_std_0 | 0.07271 |
-| 4 | contrast_std_4 | 0.06763 |
-| 5 | rolloff_std | 0.06527 |
-| 6 | pause_frequency | 0.06016 |
-| 7 | contrast_std_1 | 0.05713 |
-| 8 | bandwidth_std | 0.05659 |
-| 9 | zcr_std | 0.05515 |
-| 10 | prosody_score | 0.05450 |
-| 11 | centroid_std | 0.05233 |
-| 12 | contrast_std_5 | 0.05222 |
-| 13 | contrast_std_2 | 0.04063 |
-| 14 | mfcc_std_9 | 0.03776 |
-| 15 | mfcc_std_0 | 0.03452 |
+| 1 | contrast_std_3 | 0.09484 |
+| 2 | contrast_std_0 | 0.08601 |
+| 3 | pause_frequency | 0.08508 |
+| 4 | contrast_std_4 | 0.08050 |
+| 5 | rolloff_std | 0.07797 |
+| 6 | prosody_score | 0.06706 |
+| 7 | contrast_std_1 | 0.06588 |
+| 8 | contrast_std_2 | 0.06335 |
+| 9 | contrast_std_5 | 0.06065 |
+| 10 | mfcc_std_9 | 0.05931 |
+| 11 | mfcc_std_0 | 0.04319 |
+| 12 | mfcc_std_4 | 0.03107 |
+| 13 | mfcc_std_11 | 0.02843 |
+| 14 | mfcc_std_8 | 0.02682 |
+| 15 | mfcc_std_2 | 0.02171 |
 
 ## Model Comparison
 
 | Model | Accuracy | Precision | Recall | F1 Score | Train Time |
 |-------|----------|-----------|--------|----------|------------|
-| Random Forest ⭐ | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.09s |
-| XGBoost | 0.9950 | 0.9901 | 1.0000 | 0.9950 | 0.21s |
-| LightGBM | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 0.23s |
-| Gradient Boosting | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 2.14s |
+| Random Forest ⭐ | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.32s |
+| XGBoost | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 0.34s |
+| LightGBM | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 0.61s |
+| Gradient Boosting | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 3.26s |
 
 ## Best Model: Random Forest
 
