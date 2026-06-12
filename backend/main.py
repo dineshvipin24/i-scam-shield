@@ -68,6 +68,15 @@ except Exception as e:
     print(f"[WARN] AI Voice Detector module not loaded: {e}")
     voice_detector = None
 
+# Instantiate the PyTorch AI Voice Detector module (new feature)
+try:
+    from model.ai_voice_detector import AIVoiceDetector as PyTorchAIVoiceDetector
+    ai_voice_detector = PyTorchAIVoiceDetector()
+except Exception as e:
+    print(f"[WARN] PyTorch AI Voice Detector module not loaded: {e}")
+    ai_voice_detector = None
+
+
 
 
 # ─────────────────────────────────────────────
@@ -809,6 +818,55 @@ async def analyze_ai_voice(file: UploadFile = File(...)):
     if not voice_detector:
         return {"error": "Voice Detector not initialized"}
     return voice_detector.analyze_audio_bytes(contents)
+
+
+@app.post("/api/detect-voice")
+async def detect_voice(file: UploadFile = File(...)):
+    """
+    Detect if voice is Human, AI-Generated, or Deepfake (PyTorch Model)
+    """
+    try:
+        audio_bytes = await file.read()
+        
+        if not audio_bytes:
+            return {"error": "Empty audio file"}, 400
+        
+        if len(audio_bytes) > 10_000_000:  # 10MB limit
+            return {"error": "File too large (max 10MB)"}, 413
+        
+        if not ai_voice_detector:
+            return {"error": "PyTorch AI Voice Detector not initialized"}, 500
+            
+        prediction, probabilities = ai_voice_detector.predict_pcm(audio_bytes)
+        confidence = max(probabilities.values()) if probabilities else 0.0
+        
+        return {
+            "prediction": prediction,
+            "confidence": float(confidence),
+            "probabilities": {
+                "human": float(probabilities.get("Human", 0.0)),
+                "ai_generated": float(probabilities.get("AI-Generated", 0.0)),
+                "deepfake_synthetic": float(probabilities.get("Deepfake/Synthetic", 0.0))
+            },
+            "message": "Voice analysis complete"
+        }
+    except Exception as e:
+        print(f"Error in voice detection: {e}")
+        return {
+            "error": str(e),
+            "message": "Voice detection failed"
+        }, 500
+
+
+@app.get("/api/voice-detector-status")
+async def voice_detector_status():
+    """Check if AI voice detector is ready"""
+    loaded = ai_voice_detector.model_loaded if ai_voice_detector else False
+    return {
+        "status": "ready" if loaded else "initializing",
+        "model_loaded": loaded,
+        "supported_formats": ["WAV", "MP3", "OGG", "FLAC"]
+    }
 
 
 @app.post("/api/analyze-complete")
